@@ -1,0 +1,166 @@
+{
+  "main": {
+    "id": "08e2cd33a90bc876",
+    "type": "split",
+    "children": [
+      {
+        "id": "26b62f2d6f23be29",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f9c60a8f86306a6b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "cp-notes.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "861a3e14d21616d5",
+    "type": "split",
+    "children": [
+      {
+        "id": "ad161d14665c68f4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ba26190e01d3774b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "63a605511c908964",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b4810659abb520f5",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "9d9ae04ade4b7d03",
+    "type": "split",
+    "children": [
+      {
+        "id": "c7918b9f6903b3a0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "da9a1601b0cde2bc",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "cp-notes.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "59e10b83e45b0dde",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "cp-notes.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "d40eab37bde8a624",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "1a822a4e337ca472",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "cp-notes.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "webpage-html-export:Export Vault to HTML": false
+    }
+  },
+  "active": "f9c60a8f86306a6b",
+  "lastOpenFiles": [
+    "imgs/Pasted image 20240110152844.png",
+    "imgs/Pasted image 20240110152607.png",
+    "imgs/Pasted image 20240110150658.png",
+    "imgs/Pasted image 20240110141449.png",
+    "imgs/Pasted image 20240110113032.png",
+    "cp-notes.md",
+    "imgs/Pasted image 20240110121552.png",
+    "imgs/Pasted image 20240110114748.png",
+    "imgs/Pasted image 20240110100959.png",
+    "imgs/Screenshot from 2024-01-09 10-01-57.png",
+    "imgs/Pasted image 20240109095128.png",
+    "imgs/Pasted image 20240109094209.png",
+    "imgs"
+  ]
+}
