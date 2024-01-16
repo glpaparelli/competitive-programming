@@ -491,7 +491,7 @@ The reasoning is the following:
 - compute the max sum path from X.left to a leaf k and the max sum path from X.right to a leaf j. 
 - the sum path from k to j (passing by X) is greater than the one previously stored? then we update the max
 # 5 - Tree Representations
-TODO
+**TODO**
 # 6 - Binary Search Tree
 A binary search tree (BST), also called an ordered or sorted binary tree, **is a rooted binary tree data structure with the key of each internal node being greater than all the keys in the respective node's left subtree and less than the ones in its right subtree.** 
 The time complexity of operations on the binary search tree is linear with respect to the height of the tree.
@@ -548,7 +548,7 @@ public boolean isPairSum(int A[], int X){
 }
 ```
 # 8 - Frogs and Mosquitoes
-TODO
+**TODO**
 # 9 - Maximum Number of Overlapping Intervals
 Consider a set of $n$ intervals $[s_i, e_i]$ on a line. 
 We say that two intervals $[s_i, e_i]$ and $[s_j, e_j]$ overlaps if and only if their intersection is not empty, i.e., if there exist at least a point $x$ belonging to both intervals. 
@@ -636,7 +636,7 @@ fn is_covered(intervals: Vec<Vec<i32>>, left: i32, right: i32) -> bool {
 }
 ```
 ## 10.2 - Sweep Line Solution
-TODO
+**TODO**
 # 11 - Longest k-Good Segment
 The array *a* with *n* integers is given. 
 Let's call the sequence of one or more *consecutive* elements in a segment. 
@@ -714,7 +714,7 @@ fn longest_kgood_segment(array: &Vec<i32>, k: i32) -> Option<(usize, usize)> {
 }
 ```
 ## 11.2 - Sweep Line Solution
-TODO
+**TODO**
 # 12 - Prefix Sums 
 **Prefix sums**, also known as cumulative sums or cumulative frequencies, **offer an elegant and efficient way to solve a wide range of problems that involve querying cumulative information about a sequence of values or elements.**
 
@@ -833,7 +833,17 @@ pub fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
 	false
 }
 ```
-# 14 - Fenwick Tree
+
+# 14 - Update the Array
+You have an array containing n elements initially all 0. 
+You need to do a number of update operations on it. 
+In each update you specify `l`, `r` and `val` which are the starting index, ending index and value to be added. 
+After each update, you add the `val` to all elements from index `l` to `r`. 
+After `u` updates are over, there will be `q` queries each containing an index for which you have to print the element at that index.
+**Observation:** `access(i)` wants the prefix sum of the elements `A[1..i]
+
+To efficiently solve this problem we introduce a new data structure, the **Fenwick Tree**
+## 14.1 - Fenwick Tree
 **The Fenwick Tree, also known as the Binary Indexed Tree (BIT), is a data structure that maintains the prefix sums of a dynamic array.** 
 **With this data structure we can update values in the original array and still answer prefix sum queries.** 
 Both operations runs in **logarithmic time**.
@@ -948,7 +958,7 @@ We can make some observations:
 3) Let be $h = \lfloor\log(n)+1\rfloor$, which is the length of the binary representation of any position in the range $[1,n]$. Since any position can be expressed as the sum of at most $h$ powers of 2, the tree has no more than $h$ levels. In fact, the number of levels is either $h$ or $h-1$, depending on the value of n
 
 Now, let’s delve into the details of how to solve our `sum` and `add` queries on a Fenwick tree.
-## 14.1 - Answering a `sum` query
+### 14.1.1 - Answering a `sum` query
 This query involves beginning at a node `i` and traversing up the tree to reach the node `0`. 
 Thus `sum(i)` takes time proportional to the height of the tree, resulting in a time complexity of $\Theta(\log n)$. 
 
@@ -959,7 +969,7 @@ This works because the ranges of these nodes ($[1,4], [5,6], [7,7]$) collectivel
 Answering a a `sum` query is straightforward **if we are allowed to store the tree's structure.**
 However a significant part of the Fenwick tree's elegance lies in the fact that storing the tree is not actually necessary. 
 This is because **we can efficiently navigate from a node to its parent using a few bit-tricks, which is the reason why the Fenwick trees are also called Binary Indexed trees.**
-### 14.1.1 - Compute the Parent of a Node
+#### 14.1.1.1 - Compute the Parent of a Node
 We want to compute the parent of a node, and we want to it quickly and without representing the structure of the tree.
 
 Let's consider the binary representation of the indexes involved in the query `sum(7)`
@@ -967,8 +977,8 @@ Let's consider the binary representation of the indexes involved in the query `s
 ![[Pasted image 20240110150658.png | center ]]
 
 **Theorem:** the binary representation of a node's parent can be obtained by removing the trailing one (i.e., the rightmost bit set to 1) from the binary representation of the node itself.
-**Proof:** TODO
-## 14.2 - Performing an `add`
+**Proof:** **TODO**
+### 14.1.2 - Performing an `add`
 Now we consider the operation `add(i,v)`. 
 We need to add the value `v` to each node whose range include the position `i`.
 
@@ -986,7 +996,7 @@ If we want to perform `add(5, x)` we just need to modify the nodes in red:
 
 We now know which are the nodes to modify for `add(i, x)`. 
 **Let's discuss how to compute these nodes with bit-tricks.**
-### 14.2.1 - Computing the Siblings
+### 14.1.2.1 - Computing the Siblings
 Continuing the above example, starting with `i = 5`, the next node to modify is its right sibling, node 6. 
 Their binary representation is 
 ![[Pasted image 20240110152844.png| center]]
@@ -1000,7 +1010,7 @@ In this case, the rightmost and second trailing one are adjacent. To obtain the 
 Thankfully, this effect is one again achieved by adding the trailing one to the node’s ID.
 
 **The time complexity** of `add` is $\Theta(n)$, as we observe that each time we move to the right sibling of the current node or the right sibling of its parent, the trailing one in its binary rep. shifts at lest one position to the left, and this can occur at most $\lfloor\log(n)\rfloor+1$ times.
-## 14.3 - Fenwick Tree in Rust
+## 14.1.2 - Fenwick Tree in Rust
 The following is a minimal implementation. 
 While we’ve transitioned to 0-based indexing for queries, internally, we still use the 1-based indexing to maintain consistency with the examples above.
 
@@ -1058,17 +1068,7 @@ impl FenwickTree {
     }
 }
 ```
-
-## 14.4 - Fenwick Tree Applications: Update the Array
-You have an array containing n elements initially all 0. 
-You need to do a number of update operations on it. 
-In each update you specify `l`, `r` and `val` which are the starting index, ending index and value to be added. 
-After each update, you add the `val` to all elements from index `l` to `r`. 
-After `u` updates are over, there will be `q` queries each containing an index for which you have to print the element at that index.
-
-**Observation:** `access(i)` wants the prefix sum of the elements `A[1..i]`
-
-**Solution:**
+## 14.2 - Fenwick Tree Solution
 We are given an array `A[1,n]` initially set to 0. 
 We want to support two operations: 
 - `access(i)` returns `A[i]`
@@ -1113,4 +1113,492 @@ impl UpdateArray {
 }
 ```
 
-## 14.5 - Fenwick Tree Applications: Nested Segments
+# 15 - Nested Segments
+We are given $n$ segments: $[l_1, r_1],\dots, [l_n, r_n]$ on a line. There are no coinciding endpoints among the segments. 
+The task is to determine and report the number of other segments each segment contains.
+**Alternatively said:** for the segment $i$ we want to count the number of segments $j$ such that the following condition hold: $l_i < l_j \land r_j < r_i$. 
+
+We provide two solutions to this problem: 
+- with Fenwick Tree
+- with **Segment Tree**
+## 15.1 - Fenwick Tree Solution
+We use a sweep line & Fenwick tree approach. 
+
+First we build the Fenwick tree by adding $1$ in each position that corresponds to the right endpoint of a segment. 
+This way, a `sum(r)` reports the number of segments that end in the range $[1,r]$
+
+Next, we let a sweep line process the segments in increasing order of their left endpoints.
+When we process the segment $[l_i, r_i]$ we compute `sum(r_i - 1)` as the result for the current segment. 
+Before moving to the next segment, we add $-1$ at position $r_i$, to remove the contribution of the right endpoint of the current segment. 
+**said easy:** the Fenwick tree acts like the "counter" variable in a sweep line algorithm. 
+
+The claim is that `sum(r_i - 1)` is the number of segments contained in $[l_i, r_i]$. 
+This is because all the segments that starts before $l_i$ have already been processed, and their right endpoints have been removed from the Fenwick tree.
+Therefore, `sum(r_i - 1)` is the number of segments that starts after $l_i$ and ends before $r_i$
+
+The following snippet implement the solution above, using the Fenwick tree previously defined. 
+**TODO**
+## 15.2 - Segment Tree
+**A Segment Tree is a data structure that stores information about array intervals as a tree.**
+This allows answering range queries over an array efficiently, while still being flexible enough to **allow quick modification of the array**.
+We can **find the sum of consecutive array elements**`A[l..r]` or **find the minimum element in a segment** in $O(\log(n))$ time. 
+Between answering such queries **we can modifying the elements by replacing one element of the array, or even changing the elements of a whole subsegment** (e.g., assigning all elements `a[l..r]` to any value, or adding a value to all element in the subsegment)
+
+**Segment trees can be generalized to larger dimensions.** For instance, with 2-dimensional Segment trees you can answer sum or minimum queries over some subrectangle of a given matrix in $O(\log^2(n))$ time. 
+
+**We consider the simplest form of Segment Trees**. 
+**We want to answer sum queries efficiently.** 
+The formal definition of our task is the following: given an array $a[0,\dots,n-1]$, the Segment Tree must be able to perform the following operations in $O(\log(n))$ time
+1) find the sum of elements between the indices $l$ and $r$: $\Sigma_{i=l}^r\ a[i]$ 
+2) change values of elements in the array: $a[i] = x$
+
+**Observation:** even our simple form of Segment Tree is an improvement over the simpler approaches: 
+- a naive implementation that uses just the array can update element in O(1) but requires O(n) to compute each sum query
+- a precomputed prefix sums can compute the sum queries in O(1) but updating an array element requires O(n) changes to the prefix sums
+### 15.2.1 - Structure of the Segment Tree
+We can take a divide-and-conquer approach when it comes to array segments.
+We compute and store the sum of the elements of the whole array, i.e. the sum of the segment $a[0,\dots,n-1]$. 
+Then we split the array into two halves $a[0,\dots,n/2 -1]$ and $a[n/2,\dots, n-1]$, compute the sum of each halves and store it. Each of this halves are split in half, and so on until all segments reach size 1. 
+
+We can view this segment as forming a binary tree: the root is the whole array segment, and each vertex (except leaves) has exactly two children. 
+This is why this data structure is called "segment tree". 
+
+**Example:** consider the array $a = [1,3,-2,8,-7]$
+![[Pasted image 20240112095556.png | center | 450]]
+From the short description we just gave we can conclude that Segment Trees only require a linear number of vertices. 
+The first level of our tree contains a single node (the root), the second level will contain two nodes, the third we have four nodes, until the reaches $n$. 
+Thus, the number of vertices in the worst case can be estimated by the sum 
+$$1+2+4+\dots+ 2^{\lceil\log(n)\rceil+1}<4n$$
+Mind that whenever $n$ is not a power of 2, not all levels of the Segment Tree will be completely filled, as shown in the image. 
+**The height of a Segment Tree** is $O(\log(n))$, because when going down the root to the leaves the size of the segments decrease approximately by half. 
+#### 15.2.1.1 - Construction
+Before constructing the segment tree we need to decide: 
+- the value that gets stored at each node of the segment tree. In a sum segment tree a node would store the sum of the elements in its range $[l,r]$
+- the merge operation that merges two sibling in a segment tree. In a sum segment tree, the two nodes corresponding to the ranges $a[l_1,\dots,r_1]$ and $a[l_2,\dots,r_2]$ would be merged into a node corresponding to the range $a[l_1,\dots,r_2]$ by adding the values of the two nodes
+
+Note that a vertex is a leaf if its corresponding segment covers only one value of the original array. It is present at the lowest level of the tree and its value would be equal to the corresponding element $a[i]$. 
+
+**For construction of the segment tree, we start at the bottom level (the leaves) and assign them their respective values**. 
+**On the basis of these values we can compute the values of the previous level**, using the `merge`  function. 
+And on the basis of those, we can compute the values of the previous, and so on until we reach the root.
+**It is convenient to describe this operation recursively in the other direction, i.e., from the root vertex to the leaf vertices.**
+
+The construction procedure, if called of a non-leaf vertex, does the following:
+- recursively construct the values of the two child vertices 
+- merge the computed values of these children 
+
+We start the construction at the root vertex, and hence, we are able to compute the entire segment tree. 
+The **time complexity of the construction** is O(n), assuming that the merge operation is O(1), as the merge operation gets called n times, which is equal to the number of internal nodes in the segment tree.
+#### 15.2.1.2 - Sum Queries
+We receive two integers $l$ and $r$, and we have to compute the sum of the segment $a[l,\dots,r]$ in $O(\log(n))$ time. 
+To do this we will traverse the tree and use the precomputed sums of the segments. 
+
+Let's assume that we are currently at the vertex that covers the segment $a[tl,\dots,tr]$. 
+There are three possible cases: 
+1) the segment $a[l,\dots,r]$ is equal to the corresponding segment of the current index, then we are finished and we return the sum that is stored in the vertex
+2) the segment of the query can fall completely into the domain of either the left or the right child. In this case we can simply go to the child vertex, which corresponding segment covers the query segment, and execute the algorithm described here with that vertex
+3) the query segment intersects with both children. In this case we have no other option as to make two recursive calls, one for each child. First we go to the left child, compute a partial answer for this vertex (i.e. the sum of values of the intersection), then go the right child, compute the partial answer using that vertex, and then combine the answers.
+
+So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). 
+And the recursion ends whenever the boundaries of the current query segment coincides with the boundaries of the segment of the current vertex. 
+In that case the answer will be the precomputed value of the sum of this segment, which is stored in the tree.
+
+Obviously we will start the traversal from the root vertex of the Segment Tree.
+
+**Example:** consider the array $a = [1,3,-2,8,-7]$, and we want to compute the sum of the segment $a[2,\dots,4] = [-2,8,-7] = -1$ 
+![[Pasted image 20240112103329.png | center | 450]]
+**Let's now reason about the complexity of the algorithm.**
+We have to show that we can compute the sum queries in $O(\log(n))$.
+**Theorem:** for each level we only visit no more than four vertices.
+**Proof:** **TODO**
+And since the height of the tree is $O(\log(n))$, we receive the desired running time. 
+#### 15.2.1.3  - Update Queries
+Now we want to modify a specific element in the array, let's say we want to do the assignment $a[i] = x$. And we have to rebuild the Segment Tree, such that it corresponds to the new, modified array. 
+
+This query is easier than the sum query. Each level of a segment tree forms a partition of the array. Therefore an element $a[i]$ only contributes to one segment from each level. 
+Thus only $O(\log(n))$ vertices need to be updated. 
+
+It is easy to see that the update request can be implemented using a recursive function. The function gets passed the current tree vertex, and it recursively calls itself with one of the two child vertices (the one that contains $a[i]$) and after that recomputes its sum value, similar how it is done in the build method (that is as the sum of its two children). 
+
+**Example:** given the same array as before, we want to perform the update $a[2] = 3$ 
+![[Pasted image 20240112112424.png | center | 450]]
+### 15.2.2 - Simple Implementation
+The main consideration is how to store the Segment Tree. 
+Of course we can define a   `Vertex` struct and create objects, that store the boundaries of the segment, its sum and additionally also pointers to its child vertices. 
+However, this requires storing a lot of redundant information in the form of pointers. 
+We use a simple trick to make this a lot more efficient by **using an implicit data structure**: only storing the sums in an array.
+
+The sum of the root vertex at index 1, the sums of its two child vertices at indices 2 and 3, the sums of the children of those two vertices at indices 4 to 7, and so on. With 1-indexing, conveniently the left child of a vertex at index   $i$  is stored at index   $2i$ , and the right one at index   $2i + 1$ . 
+Equivalently, the parent of a vertex at index   $i$  is stored at   $i/2$  (integer division).
+**This simplifies the implementation a lot.** 
+We don't need to store the structure of the tree in memory. It is defined implicitly. We only need one array which contains the sums of all segments.
+
+As noted before, we need to store at most   $4n$  vertices. 
+It might be less, but for convenience we always allocate an array of size  $4n$ . 
+There will be some elements in the sum array, that will not correspond to any vertices in the actual tree, but this doesn't complicate the implementation.
+
+**Here's the Rust implementation of what we have seen**
+```rust
+/// A struct representing a Segment Tree
+struct SegmentTree {
+	/// The size of the array
+	n: usize,
+	/// The array to store the segment tree
+	t: Vec<i32>,
+}
+
+impl SegmentTree {
+	/// Constructor to initialize the segment tree
+	///
+	/// # Arguments
+	///
+	/// * `a` - The input array
+	///
+	/// # Returns
+	///
+	/// A new instance of `SegmentTree`
+	fn new(a: &[i32]) -> SegmentTree {
+		let n = a.len();
+		let mut t = vec![0; 4 * n];
+		SegmentTree::build(&mut t, a, 1, 0, n - 1);
+		SegmentTree { n, t }
+	}
+
+	/// Build the segment tree recursively
+	///
+	/// # Arguments
+	///
+	/// * `t` - The segment tree array
+	/// * `a` - The input array
+	/// * `v` - The current vertex
+	/// * `tl` - The left boundary of the current segment
+	/// * `tr` - The right boundary of the current segment
+	fn build(t: &mut Vec<i32>, a: &[i32], v: usize, tl: usize, tr: usize) {
+		if tl == tr {
+			// If the segment has a single element, store it in the tree
+			t[v] = a[tl];
+		} else {
+			// Otherwise, recursively build the left and right subtrees
+			let tm = (tl + tr) / 2;
+			SegmentTree::build(t, a, v * 2, tl, tm);
+			SegmentTree::build(t, a, v * 2 + 1, tm + 1, tr);
+			// Combine the values of the left and right subtrees
+			t[v] = t[v * 2] + t[v * 2 + 1];
+		}
+	}
+
+	/// Query the sum in a range [l, r]
+	///
+	/// # Arguments
+	///
+	/// * `v` - The current vertex
+	/// * `tl` - The left boundary of the current segment
+	/// * `tr` - The right boundary of the current segment
+	/// * `l` - The left boundary of the query range
+	/// * `r` - The right boundary of the query range
+	///
+	/// # Returns
+	///
+	/// The sum in the specified range
+	fn sum(&self, v: usize, tl: usize, tr: usize, l: usize, r: usize) -> i32 {
+		if l > r {
+			// If the query range is invalid, return 0
+			0
+		} else if l == tl && r == tr {
+			// If the segment is within the query range, return its value
+			self.t[v]
+		} else {
+			// Otherwise, recursively query the left and right subtrees
+			let tm = (tl + tr) / 2;
+			self.sum(v * 2, tl, tm, l, std::cmp::min(r, tm))
+			+ self.sum(v * 2 + 1, tm + 1, tr, std::cmp::max(l, tm + 1), r)
+		}
+	}
+	
+	/// Update a value at a specific position
+	///
+	/// # Arguments
+	///
+	/// * `v` - The current vertex
+	/// * `tl` - The left boundary of the current segment
+	/// * `tr` - The right boundary of the current segment
+	/// * `pos` - The position to update
+	/// * `new_val` - The new value to set at the specified position
+	fn update(
+		&mut self, 
+		v: usize, 
+		tl: usize, 
+		tr: usize, 
+		pos: usize, 
+		new_val: i32
+	) {
+		if tl == tr {
+			// If the segment has a single element, update it
+			self.t[v] = new_val;
+		} else {
+			// Otherwise, recursively update the left or right subtree
+			let tm = (tl + tr) / 2;
+			if pos <= tm {
+			self.update(v * 2, tl, tm, pos, new_val);
+			} else {
+			self.update(v * 2 + 1, tm + 1, tr, pos, new_val);
+			}
+			// Update the current node
+			self.t[v] = self.t[v * 2] + self.t[v * 2 + 1];
+		}
+	}
+
+	/// Print the segment tree in a meaningful way
+	///
+	/// # Arguments
+	///
+	/// * `v` - The current vertex
+	/// * `tl` - The left boundary of the current segment
+	/// * `tr` - The right boundary of the current segment
+	fn print_tree(&self, v: usize, tl: usize, tr: usize, indent: usize) {
+		// Print the current node
+		println!(
+			"{0:width$}Node {1}: [{2}, {3}] = {4}",
+			"",
+			v,
+			tl,
+			tr,
+			self.t[v],
+			width = indent
+		);
+		// If it's not a leaf node, recursively print left and right subtrees
+		if tl < tr {
+			let tm = (tl + tr) / 2;
+			self.print_tree(v * 2, tl, tm, indent + 2);
+			self.print_tree(v * 2 + 1, tm + 1, tr, indent + 2);
+		}
+	}
+}
+```
+### 15.2.3 Lazy Propagation
+Segment Tree allows applying modification queries to an entire segment of contiguous elements, and perform the query in the same time $O(\log(n))$.
+When there are many updates and updates are done on a range, we can postpone some updates (avoid recursive calls in update) and do those updates only when required.
+
+**TODO:** https://cp-algorithms.com/data_structures/segment_tree.html
+## 15.3 - Segment Trees Solution
+**Let's now solve nested segments with a Segment Tree**
+**TODO**
+# 16 - Powerful Array
+An array of positive integers $a_1,\dots,a_n$ is given. Let us consider its arbitrary subarray $a_l, a_{l+1},\dots, a_r$, where $1 \le l \le r \le n$.
+For every positive integer $s$ we denote by $K_s$ the number of occurrences of $s$ into the subarray.
+We call the **power** of the subarray the sum of products $K_s \cdot K_s \cdot s$ for every positive integer $s$. 
+The sum contains only finite number of nonzero summands as the number of different values in the array is indeed finite. 
+
+You should calculate the power of $t$ given subarrays.
+
+**Besides the trivial solutions, we introduce a new algorithmic technique.**
+## 16.1 - Mo's Algorithm 
+The Mo’s Algorithm is a powerful and efficient technique for solving a wide variety of range query problems. 
+It becomes particularly **useful for kind of queries where the use of a Segment Tree or similar data structures is not feasible.** 
+**This typically occurs when the query is non-associative, meaning that the result of a query on a range cannot be derived by combining the answers of the subranges that cover the original range.**
+
+Mo’s algorithm typically achieves a time complexity of $O((n+q)\sqrt n)$, where $n$ represents the size of the dataset, and $q$ is the number of queries.
+
+**Let's consider an easier problem than Powerful Array**
+We are given an array $A[0,n-1]$ consisting of colors, with each color represented by an integer within $[0,n-1]$. 
+Additionally we are given a set of $q$ range queries called `three_or_more`. 
+The query `three_or_more(l,r)` aims to count the colors that occur at least three times in the subarray $A[l..r]$. 
+
+A **straightforward solution** for the problem: simply scan the subarray and use an additional array as a counter to keep track of occurrences of each color within the range. 
+Whenever a color reaches three the answer is incremented by 1.
+Mind that after each query we have to reset the array of counters. 
+
+Indeed, it’s evident that it has a time complexity of $\Theta(qn)$. 
+The figure below illustrates an input that showcases the worst-case running time. 
+We have $n$ queries. The first query range has a length of $n$ and spans the entire array. Then, the subsequent query ranges are each one unit shorter, until the last one, which has a length of one. 
+The total length of these ranges is $\Theta(n^2)$, which is also the time complexity of the solution.
+![[Pasted image 20240116092201.png | center | 600]]
+
+**Let's now see the solution using the Mo's Algorithm.**
+Suppose we have just answered the query for the range $[l',r']$ and are now addressing the range $[l,r]$. 
+Instead of starting from scratch, we can update the previous answer and counters by adding or removing the contributions of colors that are new in the query range but not in the previous one, or vice versa.
+Specifically, for left endpoints, we must remove all the colors in $A[l',l-1]$ if $l' < l$, or we need to add all the colors in $A[l,l']$ if $l < l'$. The same applies to right endpoints $r$ and $r'$. 
+
+The rust implementation below uses two closures, `add` and `remove` to keep `answer` and `counters` updated as we adjust the endpoints
+```rust
+pub fn three_or_more(a: &[usize], queries: &[(usize, usize)]) -> Vec<usize> {
+    let mut counters: Vec<usize> = vec![0; a.len()];
+    let mut answers = Vec::with_capacity(queries.len());
+
+    let mut cur_l = 0;
+    let mut cur_r = 0; // here right endpoint is excluded
+    let mut answer = 0;
+
+    for &(l, r) in queries {
+        let mut add = |i| {
+            counters[a[i]] += 1;
+            if counters[a[i]] == 3 {
+                answer += 1
+            }
+        };
+
+        while cur_l > l {
+            cur_l -= 1;
+            add(cur_l);
+        }
+
+        while cur_r <= r {
+            add(cur_r);
+            cur_r += 1;
+        }
+
+        let mut remove = |i| {
+            counters[a[i]] -= 1;
+            if counters[a[i]] == 2 {
+                answer -= 1
+            }
+        };
+
+        while cur_l < l {
+            remove(cur_l);
+            cur_l += 1;
+        }
+
+        while cur_r > r + 1 {
+            cur_r -= 1;
+            remove(cur_r);
+        }
+
+        answers.push(answer);
+    }
+
+    answers
+}
+```
+
+The time complexity of the algorithm remains $\Theta(qn)$. 
+However we observe that a query now executes more quickly if its range significantly overlaps with the range of the previous query. 
+
+This implementation is **highly sensitive to the ordering of the queries.**
+The previous figure becomes now a best-case for the new implementation as it takes $\Theta(n)$time. Indeed, after spending linear time on the first query, any subsequent query is answered in constant time.
+Mind that it is enough to modify the ordering of the above queries to revert to quadratic time (alternate between very short and very long queries).
+
+The above considerations lead to a question: **if we have a sufficient number of queries, can we rearrange them in a way that exploits the overlap between successive queries to gain an asymptotic advantage in the overall running time?**
+Mo's Algorithm answers positively to this question by providing a reordering of the queries such that the time complexity is reduces to $\Theta((q+n)\sqrt n)$  
+
+The idea is to conceptually partition the array $A$ into $\sqrt n$ buckets, each of size $\sqrt n$, named $B_1,B_2,\dots,B_{\sqrt n}$. 
+A query **belongs** to a bucket $B_k$ if and only if its left endpoint $l$ falls into the $k-\text{th}$ bucket, which can be expressed as $\lfloor l/\sqrt n\rfloor = k$
+Initially we group the queries based on their corresponding buckets, and within each bucket the queries are solved in ascending order of their right endpoints.
+
+The figure shows this bucketing approach and the queries of one bucket sorted by their right endpoint.
+![[Pasted image 20240116094255.png | center | 600]]
+
+**Let's analyze the complexity of the solution using this ordering**
+It is sufficient to count the number of times we move the indexes `cur_l` and `cur_r`. This is because both `add` and `remove` take constant time, and thus the time complexity is proportional to the overall number of moves of these two indexes. 
+
+Let's concentrate on a specific bucket. As we process the queries in ascending order of their right endpoints, the index `cur_r` moves a total of at most $n$ times. 
+On the other hand, the index `cur_l` can both increase and decrease but it is limited within the bucket, and thus it cannot move more than $\sqrt n$ times per query. 
+Thus, for a bucket with $b$ queries, the overall time to process its queries is $\Theta(b\sqrt n + n)$. 
+
+Summing up over all buckets the time complexity is $\Theta(q\sqrt n + n\sqrt n)$, aka $\Theta((n+q)\sqrt n))$. 
+
+Here's a Rust implementation of the reordering process. 
+We sort the queries by buckets, using their left endpoints, and within the same bucket we sort them in ascending order by their right endpoints. 
+We also have to compute a `permutation` to keep track of how the queries have been reordered. This permutation is essential for returning the answers to their original ordering. 
+```rust
+pub fn mos(a: &[usize], queries: &[(usize, usize)]) -> Vec<usize> {
+    // Sort the queries by bucket, get the permutation induced by this sorting.
+    // The latter is needed to permute the answers to the original ordering
+    let mut sorted_queries: Vec<_> = queries.iter().cloned().collect();
+	    let mut permutation: Vec<usize> = (0..queries.len()).collect();
+
+    let sqrt_n = (a.len() as f64) as usize + 1;
+    sorted_queries.sort_by_key(|&(l, r)| (l / sqrt_n, r));
+    permutation.sort_by_key(|&i| (queries[i].0 / sqrt_n, queries[i].1));
+
+    let answers = three_or_more(a, &sorted_queries);
+
+    let mut permuted_answers = vec![0; answers.len()];
+    for (i, answer) in permutation.into_iter().zip(answers) {
+        permuted_answers[i] = answer;
+    }
+
+    permuted_answers
+}
+```
+
+**Final Considerations on Mo's Algorithm**
+Mo’s algorithm is an offline approach, which means we cannot use it when we are constrained to a specific order of queries or when update operations are involved.
+
+When implementing Mo’s algorithm, the most challenging aspect is implementing the functions `add` and `remove`. 
+There are query types for which these operations are not as straightforward as in previous problems and require the use of more advanced data structures than just an array of counters
+## 16.2 - Solution
+We can just use Mo's Algorithm and a little bit of attention in updating the answer after a `add` or a `remove`.
+
+The solution is identical to the one seen in the previous problem, with one difference. 
+We are not interested anymore in the number of occurrences of $i$, denoted $K_i$, in a given subarray, but we want to compute $$\Sigma_i\ K_i^2\cdot i,\ i\in [l,r]$$
+**When we increase the number of an occurrence we have to first remove the number obtained when we thought that there was one less occurrence.** 
+Code talks more than words: 
+```rust 
+let mut add = |i| {
+	// we found another occurrence of i, we remove the old "power"
+	sum -= counters[a[i]] * counters[a[i]] * a[i];
+	counters[a[i]] += 1;
+	// we update the power using the right number of occurreces of i
+	sum += counters[a[i]] * counters[a[i]] * a[i];
+};
+
+let mut remove = |i| {
+	sum -= counters[a[i]] * counters[a[i]] * a[i];
+	counters[a[i]] -= 1;
+	sum += counters[a[i]] * counters[a[i]] * a[i];
+};
+```
+# 17 - Longest Common Subsequence
+Given two strings, `S1` and `S2`, the task is to find the length of the longest common subsequence, i.e. longest subsequence present in both strings. 
+
+**There are many ways to attack this problem, we use it to talk about Dynamic Programming.**
+## 17.1 - Dynamic Programming
+Dynamic Programming, like divide-and-conquer, solves problems by combining solutions of subproblems. 
+Divide-and-Conquer algorithms partitions the problem into disjoint subproblems, solve the subproblems and then combine their solutions to solve the original problem. 
+In contrast, **dynamic programming applies when subproblems overlap, that is, when sub-problems share sub-sub-problems.**
+In this context a divide-and-conquer algorithm does more work than necessary, repeatedly solving the common sub-sub-problems. 
+**A dynamic programming algorithm solves each sub-sub-problem just once and then saves its answer in a table, avoiding the work of recomputing the answer every time it solves each sub-sub-problem.** 
+### 17.1.2 - A first easy problem: Fibonacci
+Fibonacci numbers are defined as 
+$$
+\begin{align}
+	& F_0 = 0 \\ 
+	& F_1 = 1 \\ 
+	& F_n = F_{n-1} + F_{n-2}
+\end{align}
+$$
+Our goal is to compute the n-th Fibonacci number $F_n$. 
+
+Let's consider the following trivial recursive algorithm: 
+```java
+int fibonacci(int n) {
+	if (n == 0)
+		return 0; 
+	if (n == 1)
+		return 1; 
+	else
+		return fibonacci(n-1) + fibonacci(n-2);
+}
+```
+
+In computing `fibonacci(n-1)` we will compute `fibonacci(n-2)` and `fibonacci(n-3)`, 
+and in computing `fibonacci(n-2)` we will compute `fibonacci(n-3)` and `fibonacci(n-4)` and so on. 
+There are lots of the same Fibonacci numbers that are computed every time from scratch. 
+
+**Memorization is a trick that allows to reduce the time complexity.**
+Whenever we compute a Fibonacci number we store it in an array `M`. 
+Every time we need a Fibonacci number, we compute it only if the answer is not in the array. 
+**This algorithm requires linear time and space.**
+```java
+int fibonacciM(n) {
+	if (n == 0)
+		return 0; 
+	if (n == 1)
+		return 1; 
+	if (M[n] == null) 
+		M[n] = fibonacciM(n-1) + fibonacciM(n-2);
+
+	return M[n];
+}
+```
