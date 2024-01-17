@@ -1,3 +1,5 @@
+The nodes are problem-centered: we introduce a mandatory problem and then, if necessary, we introduce the theory to efficiently solve it.
+**Use at Your Own Risk.**
 # 1 - Contiguous Sub-Array with Max Sum
 ![[Screenshot from 2024-01-05 09-29-59.png | center | 700]]
 ## 1.1 - Trivial Solution, O(n^3)
@@ -490,6 +492,8 @@ The reasoning is the following:
 - take a node X
 - compute the max sum path from X.left to a leaf k and the max sum path from X.right to a leaf j. 
 - the sum path from k to j (passing by X) is greater than the one previously stored? then we update the max
+
+**TODO:** 5 - 6 NEED TO DIE, 7 NEED TO BE NESTED IN THE PROBLEM
 # 5 - Tree Representations
 **TODO**
 # 6 - Binary Search Tree
@@ -1551,6 +1555,7 @@ let mut remove = |i| {
 ```
 # 17 - Longest Common Subsequence
 Given two strings, `S1` and `S2`, the task is to find the length of the longest common subsequence, i.e. longest subsequence present in both strings. 
+**Observation:** subsequence != substring. A subsequence do not have to be contiguous. 
 
 **There are many ways to attack this problem, we use it to talk about Dynamic Programming.**
 ## 17.1 - Dynamic Programming
@@ -1602,3 +1607,266 @@ int fibonacciM(n) {
 	return M[n];
 }
 ```
+
+**There is a more direct bottom-up approach which uses linear time and constant space.** 
+This approach typically depends on some natural notion of "size" of a sub-problem, such that solving any particular sub-problem depends only on solving "smaller" sub-problems. 
+
+We solve the subproblems by size and solve them in size order, smallest first. 
+When solving a particular sub-problem, we have already solved all the smaller subproblems its solution depends upon, and we have saved their solution. 
+
+In our case this approach corresponds to compute an array `F` which entry `F[i]` requires only on entries `F[i-1]` and `F[i-2`. 
+```java
+int iterativeFibo(n) {
+	int[] F = new int[n]; 
+	F[0] = 0; 
+	F[1] = 1; 
+	for (int i = 2; i < n; i++)
+		F[i] = F[i-1] + F[i-2];
+	return F[n];
+}
+```
+
+## 17.1.3 Memorization vs Tabulation
+Tabulation and Memorization are two common techniques used in dynamic programming to optimize the solution of problems by avoiding redundant computations and storing intermediate results.
+1. **Tabulation:**
+    - **Definition:** **Tabulation involves solving a problem by building a table** **(usually a 2D array or matrix) and filling it in a bottom-up manner. The table is filled iteratively, starting from the base cases and moving towards the final solution.**
+    - **Process:**
+        - The tabulation approach directly computes the solution for smaller subproblems and uses these solutions to build up to the final solution.
+        - It is an iterative approach that avoids recursion and typically uses loops to fill in the table.
+        - The final result is usually found in the bottom-right cell of the table.
+    - **Advantages:**
+        - It is often more intuitive and easier to implement in an iterative manner.
+        - It usually has lower memory requirements since it only needs to store the necessary values in the table.
+    - **Disadvantages:**
+        - It may compute values for all subproblems, even those that are not needed for the final solution, leading to potentially higher time complexity.
+2. **Memorization:**
+    - **Definition:** **Memorization involves solving a problem by storing the results of expensive function calls and returning the cached result when the same inputs occur again.**
+    - **Process:**
+        - It is a top-down approach that starts with the original problem and recursively breaks it down into smaller subproblems.
+        - The results of subproblems are cached (memorized) in a data structure (like a dictionary or an array).
+        - Before computing a subproblem, the algorithm checks whether the result is already stored in the cache. If yes, it returns the cached result; otherwise, it computes the result and stores it for future use.
+    - **Advantages:**
+        - It avoids redundant computations by storing and reusing previously computed results.
+        - It is often more space-efficient because it only stores results for the subproblems encountered during the actual computation.
+    - **Disadvantages:**
+        - It may introduce overhead due to function calls and the need for a cache, potentially resulting in a slightly slower runtime compared to tabulation.
+
+In summary, both tabulation and memorization are techniques used to optimize dynamic programming solutions by avoiding redundant computations. 
+Tabulation builds a table bottom-up, while memorization caches results top-down. 
+
+## 17.2 - Solution
+Now that we have refreshed dynamic programming we can go back to our problem. 
+
+The subproblems here ask to compute the longest common subsequence (LCS) of prefixes of the two sequences `S1` and `S2`: given two prefixes `S1[1,i]` and `S[1,j]` our goal is to compute `LCS(S1[1,i], S2[1,j])`
+
+Assume that we already know the solutions to the following three smaller problems
+1) `LCS(S1[1,i-1], S2[1,j-1])`
+2) `LCS(S1[1,i], S2[1,j-1])`
+3) `LCS(S1[1,i-1], S2[1,j])`
+
+Then we have that 
+1) if `S1[i] == S2[j]` we can extend a LCS of `S1[1,i-1]` and `S2[1,j-1]` by adding one character `c = S1[i]`
+2) if `S1[i] != S2[j]` we can only consider `LCS(S1[1,i], S2[1, j-1])` and `LCS(S1[1,i-1], S2[1,j])`, and we take the longer. 
+
+**Summarizing:**
+$$
+\text{LCS(S1[1, i], S2[1, j])} = 
+	\begin{align}
+	\begin{cases}
+		0\ &\text{if i = 0 or j = 0} \\
+		\text{LCS(S1[1, i-1], S2[1, j-1]) + 1}\ &\text{if S1[i] == S2[j]} \\
+		\max(\text{LCS(S1[1, i], S2[1, j-1]), LCS(S1[1, i-1], S2[1, j])})\ &\text{otherwise}
+	\end{cases}
+	\end{align}
+$$
+The pseudo-code of the problem is the following 
+```plaintext
+function lengthLCS(X[1..m], Y[1..m]) {
+	C = [m][n]
+	for i = 0 to m 
+		C[i,0] = 0
+	for j = 0 to n 
+		C[0, j] = 0
+	for i = 1 to m
+		for j = 1 to n
+			if X[i] == Y[j]
+				C[i][j] = C[i-1][j-1] + 1
+			else 
+				C[i][j] = max(C[i][j-1], C[i-1][j])
+
+	return C[m,n]
+}
+```
+# 18 - Minimum Number of Jumps
+Consider an array of `N` integers `arr[]`. 
+Each element represents the maximum length of the jump that can be made forward from that element. 
+This means if `arr[i] = x`, then we can jump any distance `y` such that `y <= x`.  
+Find the minimum number of jumps to reach the end of the array starting from the first element. 
+If an element is 0, then you cannot move through that element.  
+**Note:** Return -1 if you can't reach the end of the array.
+## 18.1 - Solution
+**We use Dynamic Programming to solve the problem.** 
+More specifically we use **Tabulation** to solve the problem: 
+1) create an array `jumps[]` from left to right such that `jumps[i]` indicate the minimum number of jumps needed to reach the position `i` starting from the start
+2) we need to fill the array `jumps[]`. we use two nested loops, the outer indexed with `i` and the inner indexed with `j`
+	1) outer loop goes from `i = 1` to `n-1` and the inner loop goes from `j = 0` to `i`
+	2) if `i` is less than `j+arr[j]` then sets `jumps[i]` to `min(jumps[i], jumps[j]+1`
+		1) initially we set `jump[i] = INT_MAX`
+3) return `jumps[i-1]`
+
+**The implementation of the solution is the following:** 
+```rust
+fn min_num_of_jumps(arr: &[i32]) -> i32 {
+	let n = arr.len();
+	let mut jumps = vec![i32::MAX; n];
+	jumps[0] = 0;
+	
+	if n == 0 || arr[0] == 0 {
+		return -1;
+	}
+
+	for i in 1..n {
+		for j in 0..i {
+			if i as i32 <= j as i32 + arr[j] && jumps[j] != i32::MAX {
+				jumps[i] = min(jumps[i], jumps[j] + 1);
+				break;
+			}
+		}
+	}
+	jumps[n - 1]
+}
+```
+
+**The key is the if guard inside the two loops:** 
+- `i < j + arr[j]`: where we want to go is reachable from `j` with the possible number of jumps that we can do from `j`, aka `arr[j]`
+- `jumps[j]`: we can actually reach `j` from the start
+![[Pasted image 20240116171229.png |center| 600]]
+# 19 - Partial Equal Subset Sum
+Given an array `arr[]` of size `N`, check if it can be partitioned into two parts such that the sum of elements in both parts is the same.
+## 19.1 - Subset Sum
+Given a set $S$ of $n$ non-negative integers, and a value $v$, determine if there is a subset of the given set with sum equal to the given $v$. 
+
+This problem is a well-known NP-Hard problem, which admits a pseudo-polynomial time algorithm. 
+The problem has a solution which is almost the same as **0/1 Knapsack Problem.**
+
+--- 
+
+**0/1 Knapsack Problem**
+We are given $n$ items. Each item $i$ has a value $v_i$ and a weight $w_i$. We need to put a subset of these items in a knapsack of capacity $C$ to get the maximum total value in the knapsack. 
+**It is called 0/1 because each item is either selected or not selected.** 
+
+We can use the following solutions: 
+1) if $C$ is small we can use **Weight Dynamic Programming.** The time complexity is $\Theta(Cn)$
+2) If $V = \Sigma_i\ v_i$ is small we can use **Profit Dynamic Programming.** The time complexity is $\Theta(Vn)$ 
+3) if both $V$ and $C$ are large we can use *branch and bound*, not covered here. 
+
+**Weight Dynamic Programming**
+The idea is to fill a $(n+1)\times (C+1)$ matrix $K$. 
+Let $K[i,A]$ be the max profit for weight $\le A$ using items from 1 up to $i$.
+![[Pasted image 20240116180507.png | center | 600]]
+**Profit Dynamic Programming**
+The idea is similar. 
+We can use a $(n+1)\times (V+1)$ matrix $K$. 
+Let $K[V][i]$ be the minimum weight for profit at least $V$ using items from $1$ up to $i$. 
+Thus we have:
+$$K[V][i] = \min(K[V][i-1], K[V-v[i][i-1])$$
+The solution is $\max(a:K[V,n]\le C)$ 
+
+---
+
+As in the 0/1 knapsack problem we construct a matrix $W$ with $n+1$ rows and $v+1$ columns. 
+Here the matrix contains booleans. 
+
+The entry $W[i][j]$ is `true` if and only if there exists a subset of the first $i$ items with sum $j$, false otherwise. 
+
+The entries of the first row $W[0][]$ are set to false, as with $0$ elements you can not make any sum. 
+The entries of the first column $W[][0]$ are set to true, as with the first $j$ elements you can always make a subset that has sum $0$, the empty subset. 
+
+Entry $W[i][j]$ is true either if $W[i-1][j]$ is true or $W[i-1][j - S[i]]$ is true. 
+- $W[i-1][j] = \text{T}$, we simply do not take the $i$-th element, and with the elements in $1, i-1$ we already can make a subset which sum is $j$ 
+- $W[i-1][j-S[i]] = \text{T}$, as before: if the subset with one element less than I has sum equal to $j - S[i]$ it means that if we take $i$ we reach exactly a subset with sum $j$
+## 19.2 - Solution
+The solution is basically the adapted from the previous problems:
+- we divide the sum of the array by 2: if the sum is not divisible by 2 it means that there cannot be two partitions that summed gives the the sum.
+- once divided is the same problem above: 
+	- exists a subset of the elements that summed gives `arr.iter().sum() / 2`?
+		- if yes then the answer will be true, false otherwise
+
+```rust
+fn partial_equal_subset_sum(arr: &[i32]) -> bool {
+	let n = arr.len();
+	// if the sum of arr cannot be divided by two
+	// there can't be two paritions that summed give sum
+	let sum: i32 = arr.iter().sum();
+	if sum % 2 != 0 {
+		return false;
+	}
+	// the target value
+	let sum = sum / 2;
+	// create the matrix as seen before
+	let mut sol = vec![vec![false; (sum + 1) as usize]; n + 1];
+	for i in 0..=n {
+		sol[i][0] = true;
+	}
+	for j in 1..=(sum as usize) {
+		sol[0][j] = false;
+	}
+	for i in 1..=n {
+		for j in 1..=(sum as usize) {
+			// rust handy syntax
+			sol[i][j] = if arr[i - 1] > (j as i32) {
+				sol[i - 1][j]
+			} else {
+				sol[i - 1][j] || sol[i - 1][j - (arr[i - 1] as usize)]
+			};
+		}
+	}
+	sol[n][sum as usize]
+}
+```
+
+The **then branch** of the `if` is crucial: if `arr[i - 1]` is greater than `j`, it means that including the current element `i` in the subset would make the sum exceed the current target sum `j`.
+Therefore, the solution at `sol[i][j]` would be the same as the solution without including the current element, i.e., `sol[i - 1][j]` (aka, we do not include `i`, as we can't)
+# 20 - Longest Increasing Subsequence
+Given an array of integers, find the **length** of the **longest (strictly) increasing subsequence** from the given array.
+
+As an example consider the sequence $S=\{10,22,9,21,33,50,41,60,80\}$.
+The length of $LIS$ is $6$ and $\{10,22,33,50,60,80\}$ is a $LIS$. 
+In general the $LIS$ is not unique.
+
+Consider the sequence $S[1,n]$ and let $LIS(i)$ be the $LIS$ of the prefix $S[1,i]$ whose last element is $S[i]$. 
+$$LIS(i) = \begin{cases}1 + \max(LIS(j)\ |\ 1\le j\le i\ \text{and}\ S[j] < S[i]\\ 
+1 \text\ \ \ \ \text{if such $j$ does not exists}
+\end{cases}$$
+## 20.1 - Solution
+Due to optimal substructure and overlapping subproblem property, we can also utilize Dynamic programming to solve the problem. Instead of memoization, we can use the nested loop to implement the recursive relation.
+
+The outer loop will run from `i = 1 to N` and the inner loop will run from `j = 0 to i` and use the recurrence relation to solve the problem.
+
+The reasoning is the following:
+- The outer loop (`for i in 1..n`) iterates over each element of the array starting from the second element.
+- The inner loop (`for j in 0..i`) iterates over elements before the current element `arr[i]`.
+- The if statement checks if the current element `arr[i]` is greater than the element at index `j` and if increasing the length by 1 (`lis[j] + 1`) results in a longer LIS ending at index `i`. If true, it updates `lis[i]` accordingly.
+## 20.2 - Smarter Solution
+**TODO**
+# 21 - Longest Bitonic Sequence
+Given an array `arr[0 … n-1]` containing n positive integers, a subsequence of `arr[]` is called **bitonic** if it is first increasing, then decreasing. 
+Write a function that takes an array as argument and returns the length of the longest bitonic subsequence. 
+A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty. 
+## 21.1 - Solution
+This problem is a slight variation of the previous problem. 
+Let the input array `arr[]` be of length `n`. 
+We need to construct two arrays `lis[]` and `lds[]` using the DP solution of the Longest Increasing Subsequence
+- `lis[i]` stores the length of the longest increasing subsequence **ending** in `arr[i]`
+- `lds[i]` stores the length of the longest decreasing subsequence **starting** in `arr[i]`
+
+We return the max value of `lis[i] + lds[i] -1` where $i\in [0,n-1]$
+
+To compute `lds[i]` we iterate through the array backwards and apply the same reasoning used for `lis[]`, as we are looking for a decreasing sequence but proceeding backwards, is the same as an increasing sequence. 
+
+**Basically the output is the sum of the longest increasing sequence left to right and the longest increasing sequence right to left**
+
+
+
+
+
