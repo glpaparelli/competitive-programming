@@ -31,3 +31,4 @@ fn main() {
     let test2 = min_num_of_jumps(&arr2);
     assert_eq!(test2, 2);
 }
+

@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "59aeb1f719ee3b09",
+        "id": "0c371f31408bf50e",
         "type": "tabs",
         "children": [
           {
-            "id": "0f40bda33801a7a4",
+            "id": "92110bd74c7ae074",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cp-notes.md",
+                "file": "Handson_3_solution_Giulio_Paparelli.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "cp-notes.md",
+                "file": "Handson_3_solution_Giulio_Paparelli.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cp-notes.md",
+                "file": "Handson_3_solution_Giulio_Paparelli.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cp-notes.md"
+                "file": "Handson_3_solution_Giulio_Paparelli.md"
               }
             }
           }
@@ -147,20 +147,22 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "active": "0f40bda33801a7a4",
+  "active": "92110bd74c7ae074",
   "lastOpenFiles": [
+    "Handson_2_solution_Giulio_Paparelli.md",
+    "Handson_1_solution_Giulio_Paparelli.md",
+    "Handson_3_solution_Giulio_Paparelli.md",
+    "cp-notes.md",
+    "imgs/Screenshot from 2024-01-19 15-39-52.png",
+    "imgs/Screenshot from 2024-01-19 15-34-31.png",
     "imgs/Pasted image 20240116180507.png",
     "imgs/Pasted image 20240116171229.png",
     "imgs/Pasted image 20240116094255.png",
-    "cp-notes.md",
     "imgs/Pasted image 20240116092201.png",
     "imgs/Pasted image 20240112112424.png",
     "imgs/Pasted image 20240112103329.png",
     "imgs/Pasted image 20240112095556.png",
     "imgs/Pasted image 20240110152844.png",
-    "imgs/Pasted image 20240110152607.png",
-    "imgs/Pasted image 20240110150658.png",
-    "imgs/Pasted image 20240110141449.png",
     "imgs"
   ]
 }

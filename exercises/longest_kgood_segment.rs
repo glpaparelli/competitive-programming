@@ -3,8 +3,6 @@
 use std::io;
 use std::collections::HashSet;
 
-// TODO Line Sweep Algorithm
-
 fn main() {
     let test1 = vec![1,2,3,4,5];
     assert_eq!(longest_kgood_segment(&test1, 5), Some((0, 4)));

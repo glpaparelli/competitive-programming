@@ -1,4 +1,4 @@
-The nodes are problem-centered: we introduce a mandatory problem and then, if necessary, we introduce the theory to efficiently solve it.
+This notes are problem-centered: we introduce a problem and then the theory to efficiently solve it.
 **Use at Your Own Risk.**
 # 1 - Contiguous Sub-Array with Max Sum
 ![[Screenshot from 2024-01-05 09-29-59.png | center | 700]]
@@ -492,26 +492,9 @@ The reasoning is the following:
 - take a node X
 - compute the max sum path from X.left to a leaf k and the max sum path from X.right to a leaf j. 
 - the sum path from k to j (passing by X) is greater than the one previously stored? then we update the max
-
-**TODO:** 5 - 6 NEED TO DIE, 7 NEED TO BE NESTED IN THE PROBLEM
-# 5 - Tree Representations
-**TODO**
-# 6 - Binary Search Tree
-A binary search tree (BST), also called an ordered or sorted binary tree, **is a rooted binary tree data structure with the key of each internal node being greater than all the keys in the respective node's left subtree and less than the ones in its right subtree.** 
-The time complexity of operations on the binary search tree is linear with respect to the height of the tree.
-
-Binary search trees allow binary search for fast lookup, addition, and removal of data items. 
-Since the nodes in a BST are laid out so that **each comparison skips about half of the remaining tree**, the lookup performance is proportional to that of binary logarithm.
-
-The complexity analysis of BST shows that, on average, the insert, delete and search takes $O(\log n)$ for n nodes. 
-In the worst case, they degrade to that of a singly linked list: $O(n)$
-
-![[Pasted image 20240109090705.png | center | 250]]
-# 7 - Two Pointers Trick
-Two pointers is really an easy and effective technique that is typically used for searching pairs in a sorted array.
-## 7.1 - Two Sum in a Sorted Array
+# 5 - Two Sum in a Sorted Array
 Given a sorted array A (sorted in ascending order), having N integers, find if there exists any pair of elements (A[i], A[j]) such that their sum is equal to X.
-### 7.1.1 - Naive Solution, O(n^2)
+## 5.1 - Naive Solution, O(n^2)
 The naive approach is obvious and takes O(n^2), we simply scan the array and we return when we find two numbers that adds up to X. 
 ```java
 boolean isPairSum(int[] A, int X){
@@ -526,7 +509,10 @@ boolean isPairSum(int[] A, int X){
 	return false;
 } 
 ```
-### 7.1.2 - Smart Solution, O(n)
+## 5.2 - Two Pointers Trick
+Two pointers is really an easy and effective technique that is typically used for searching pairs in a sorted array.
+It employs using two pointer, typically one from the start of the array going left-to-right and one from the end of the array going right-to-left, until they meet. 
+## 5.3 - Two Pointers Solution, O(n)
 **We take two pointers, one representing the first element and other representing the last element of the array, and then we add the values kept at both the pointers.** 
 
 If their sum is smaller than X then we shift the left pointer to right or if their sum is greater than X then we shift the right pointer to left, in order to get closer to the sum. 
@@ -551,9 +537,59 @@ public boolean isPairSum(int A[], int X){
 	return false;
 }
 ```
-# 8 - Frogs and Mosquitoes
-**TODO**
-# 9 - Maximum Number of Overlapping Intervals
+# 6 - Frogs and Mosquitoes
+There are $n$ frogs sitting on the coordinate axis $Ox$. 
+For each frog two values $x_i$, $t_i$ are known - the position and the initial length of the tongue of the $i$-th frog (it is guaranteed that all positions $x_i$ are different).
+$m$ mosquitoes one by one are landing to the coordinate axis. 
+For each mosquito two values are known $p_j$ - the coordinate of the position where the $j$-th mosquito lands and $b_j$ - the size of the $j$-th mosquito. 
+Frogs and mosquitoes are represented as points on the coordinate axis.
+
+The frog can eat mosquito if mosquito is in the same position with the frog or to the right, and the distance between them is not greater than the length of the tongue of the frog.
+
+If at some moment several frogs can eat a mosquito the leftmost frog will eat it (with minimal $x_i$). 
+After eating a mosquito the length of the tongue of a frog increases with the value of the size of eaten mosquito. 
+It's possible that after it the frog will be able to eat some other mosquitoes (the frog should eat them in this case).
+
+For each frog print two values - the number of eaten mosquitoes and the length of the tongue after landing all mosquitoes and after eating all possible mosquitoes by frogs.
+
+Each mosquito is landing to the coordinate axis only after frogs eat all possible mosquitoes landed before. 
+Mosquitoes are given in order of their landing to the coordinate axis.
+## 6.1 Binary Search Tree
+A binary search tree (BST), also called an ordered or sorted binary tree, is a rooted binary tree data structure with the key of each internal node being greater than all the keys in the respective node's left subtree and less than the ones in its right subtree. 
+The time complexity of operations on the binary search tree is linear with respect to the height of the tree.
+
+Binary search trees allow binary search for fast lookup, addition, and removal of data items. 
+Since the nodes in a BST are laid out so that each comparison skips about half of the remaining tree, the lookup performance is proportional to that of binary logarithm.
+
+The complexity analysis of BST shows that, on average, the insert, delete and search takes $O(\log n)$ for n nodes. 
+In the worst case, they degrade to that of a singly linked list: $O(n)$
+
+![[Pasted image 20240109090705.png | center | 250]]
+### 6.1.1 Searching
+Searching for a specific key can be programmed recursively or iteratively. 
+
+Searching begins by examining the root node. If the tree is `nil`, the key being searched for does not exist in the tree. 
+Otherwise, if the key equals that of the root, the search is successful and the node is returned. 
+**If the key is less than that of the root, the search proceeds by examining the left subtree. Similarly, if the key is greater than that of the root, the search proceeds by examining the right subtree.** 
+This process is repeated until the key is found or the remaining subtree is `nil`. 
+If the searched key is not found after a `nil` subtree is reached, then the key is not present in the tree.
+![[Screenshot from 2024-01-19 15-34-31.png | center | 500]]
+### 6.1.2 Predecessor and Successor
+For certain operations, given a node $x$, finding the successor or predecessor of $x$ is crucial. 
+Assuming all the keys of the BST are distinct, **the successor of a node** $x$ in BST **is the node with the smallest key greater** than $x$'s key. 
+On the other hand, **the predecessor of a node** $x$ in BST **is the node with the largest key smaller** than $x$'s key. 
+Following is pseudo-code for finding the successor and predecessor of a node $x$ in BST.
+![[Screenshot from 2024-01-19 15-39-52.png | center ]]
+## 6.2 - Solution
+We store the position of the frogs in a BST. When a mosquito lands on a position $b$ we check which frog will eat it by simply doing a `predecessor(b)` query on the tree. 
+
+This base solution needs to be adjusted to account for three main issues: 
+1) **overlapping segments:** each frog can cover the segment `[p, p+tongue]`. To enforce that the leftmost frog has the priority on the landing mosquito we pre-process the segments to force no overlaps. If two frogs share a common segment the rightmost frog gets moved and is assigned the segment `[r+1, r+1+tongue]` where `r` is the maximum distance reached by the tongue of the left frog
+2) **dynamic segments:** when a frog eat a mosquito its tongue grows, which mean that it can now cover a longer segment. This new segment might fully contain other segments (found with a successor query). In this case we simply delete the contained segments from the tree: that frog will never eat. If the new segment partially overlaps with another we reuse the solution used for the first issue
+3) **uneaten mosquitoes:** a mosquito may be uneaten when it first lands. We store uneaten mosquitoes in another BST. When a frog eats we check if this frog can eat other mosquitoes. This can be done by a successor query 
+
+**practice_TODO**
+# 7 - Maximum Number of Overlapping Intervals
 Consider a set of $n$ intervals $[s_i, e_i]$ on a line. 
 We say that two intervals $[s_i, e_i]$ and $[s_j, e_j]$ overlaps if and only if their intersection is not empty, i.e., if there exist at least a point $x$ belonging to both intervals. 
 Compute the maximum number of overlapping intervals. 
@@ -561,14 +597,14 @@ Compute the maximum number of overlapping intervals.
 **Example:** 
 ![[Pasted image 20240109094209.png | center | 550]]
 We have a set of 10 intervals, the maximum number of overlapping intervals is 5 (at positions 3 and 4)
-## 9.1 - Sweep Line Algorithm
+## 7.1 - Sweep Line Algorithm
 The Sweep Line Algorithm is an algorithmic paradigm used to solve a lot of problems in computational geometry efficiently. 
 **The sweep line algorithm can be used to solve problems on a line or on a plane.**
 
 The sweep and line algorithm use an imaginary vertical line **sweeping** over the x-axis. 
 As it progresses, we maintain a running solution to the problem at hand. 
 The solution is updated when the vertical line reaches a certain key points where some event happen. The type of the event tells us how to update the solution. 
-## 9.2 Solution
+## 7.2 Sweep Line Solution, O(n)
 Let's apply the sweep and line algorithm to the problem above. 
 We let the sweep line from left to right and stop at the beginning or at the end of every interval. 
 These are the important points at which an event occurs: intervals start or end. 
@@ -614,9 +650,9 @@ pub fn max_overlapping(intervals: &[(usize, usize)]) -> usize {
         .unwrap()
 }
 ```
-# 10 - Check if all Integers in a Range are Covered
+# 8 - Check if all Integers in a Range are Covered
 ![[Screenshot from 2024-01-09 10-01-57.png | center | 700]]
-## 10.1 - Intuitive Solution 
+## 8.1 - Intuitive Solution 
 The following is the intuitive solution.
 Its complexity is `O((right - left) * |intervals|)`, and gives the perfect score (0 ms) on leetcode
 ```rust
@@ -639,9 +675,35 @@ fn is_covered(intervals: Vec<Vec<i32>>, left: i32, right: i32) -> bool {
 	true
 }
 ```
-## 10.2 - Sweep Line Solution
-**TODO**
-# 11 - Longest k-Good Segment
+## 8.2 - Sweep Line Solution
+Just follow the implementation below
+```rust
+fn is_covered(ranges: Vec<Vec<i32>>, left: i32, right: i32) -> bool {
+	// map: point i -> number of open ranges in i
+	let mut open_ranges_at: HashMap<i32, i32> = HashMap::new();
+	for range in ranges {
+		*open_ranges_at.entry(range[0]).or_insert(0) += 1;
+		*open_ranges_at.entry(range[1] + 1).or_insert(0) -= 1;
+	}
+	
+	let mut open_ranges_now = 0;
+	for prev in 1..left {
+		// number of ranges before the "left", the start of the range
+		open_ranges_now += open_ranges_at.get(&prev).unwrap_or(&0);
+	}
+	
+	for point in left..=right {
+		// number of ranges open in the current point in [left,right]
+		open_ranges_now += open_ranges_at.get(&point).unwrap_or(&0);
+		// there are no open ranges we return false
+		if open_ranges_now == 0 {
+		return false;
+		}
+	}
+	true
+}
+```
+# 9 - Longest k-Good Segment
 The array *a* with *n* integers is given. 
 Let's call the sequence of one or more *consecutive* elements in a segment. 
 Also let's call the segment k-good if it contains no more than _k_ different values.
@@ -649,7 +711,7 @@ Also let's call the segment k-good if it contains no more than _k_ different
 **Note:** if the distance between two numbers is `abs(1)` then the two numbers are consecutive.
 
 Find any longest k-good segment.
-## 11.1 - Sliding Window Solution, O(n)
+## 9.1 - Sliding Window Solution, O(n)
 We use the sliding window approach. 
 Simply follow the following implementation
 ```rust
@@ -717,9 +779,20 @@ fn longest_kgood_segment(array: &Vec<i32>, k: i32) -> Option<(usize, usize)> {
 	None
 }
 ```
-## 11.2 - Sweep Line Solution
-**TODO**
-# 12 - Prefix Sums 
+## 9.2 - Sweep Line Solution
+**theory_TODO**
+# 10 - Contiguous Subarray Sum
+Given an integer array `nums` and an integer `k`, return `true` if `nums` has a **good subarray** or false otherwise. 
+A **good subarray** is a subarray where: 
+- its length is **at least** 2 
+- the sum of the elements of the subarray is a multiple of `k`
+
+**Note** that:
+- A **subarray** is a contiguous part of the array.
+- An integer `x` is a multiple of `k` if there exists an integer `n` such that `x = n * k`. `0` is **always** a multiple of `k`.
+## 10.1 - Naive Solution, O(n^2)
+The obvious brute force approach: from each element we compute every possible subarray starting in that element, check if sum is a multiple of `k` and store the maximum length so far.
+## 10.2 - Prefix Sums 
 **Prefix sums**, also known as cumulative sums or cumulative frequencies, **offer an elegant and efficient way to solve a wide range of problems that involve querying cumulative information about a sequence of values or elements.**
 
 The essence of prefix sums lies in **transforming a given array of values into another array, where each element at a given index represents the cumulative sum of all preceding elements in the original array.**
@@ -727,7 +800,7 @@ The essence of prefix sums lies in **transforming a given array of values into a
 An example of prefix sum array is shown in the picture: 
 ![[Pasted image 20240110100959.png | center | 350]]
 Where it is clear that $$P[i] = \Sigma_{j=1}^i\ A[k]$$
-## 12.1 Prefix Sum using Rust
+### 10.2.1 Prefix Sum using Rust
 We can use the combinator `scan` to produce the prefix sums from an iterator. 
 
 `scan` is an **iterator adapter**, it maintains an internal state, initially set to a seed value, which is modified by a closure taking both the current internal state and the current element from the iterator into account.
@@ -745,18 +818,7 @@ let psums = a
 
 assert!(psums.eq(&vec![2, 6, 7, 14, 17, 17, 21, 23]));
 ```
-# 13 - Contiguous Subarray Sum
-Given an integer array `nums` and an integer `k`, return `true` if `nums` has a **good subarray** or false otherwise. 
-A **good subarray** is a subarray where: 
-- its length is **at least** 2 
-- the sum of the elements of the subarray is a multiple of `k`
-
-**Note** that:
-- A **subarray** is a contiguous part of the array.
-- An integer `x` is a multiple of `k` if there exists an integer `n` such that `x = n * k`. `0` is **always** a multiple of `k`.
-## 13.1 - Naive Solution, O(n^2)
-The obvious brute force approach: from each element we compute every possible subarray starting in that element, check if sum is a multiple of `k` and store the maximum length so far.
-## 13.2 - Prefix Sum Solution, O(n)
+## 10.3 - Prefix Sum Solution, O(n)
 The key to use the prefix sum technique is the following. 
 **Observation:** any two prefix sums that are not next to each other with the same mod k, or a prefix sum with mod k = 0 that is not the first number will yield a valid subarray.
 
@@ -802,7 +864,7 @@ fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
 	false
 }
 ```
-## 13.2 - Optimized Solution, O(n)
+## 10.4 - Optimized Solution, O(n)
 Turn's out we really do not need a full prefix sum array. 
 We can just compute `sum` as we go and use it also as the mod result. 
 This results in a better space efficiency, from $O(n)$ to $O(1)$
@@ -837,8 +899,7 @@ pub fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
 	false
 }
 ```
-
-# 14 - Update the Array
+# 11 - Update the Array
 You have an array containing n elements initially all 0. 
 You need to do a number of update operations on it. 
 In each update you specify `l`, `r` and `val` which are the starting index, ending index and value to be added. 
@@ -847,7 +908,7 @@ After `u` updates are over, there will be `q` queries each containing an index f
 **Observation:** `access(i)` wants the prefix sum of the elements `A[1..i]
 
 To efficiently solve this problem we introduce a new data structure, the **Fenwick Tree**
-## 14.1 - Fenwick Tree
+## 11.1 - Fenwick Tree
 **The Fenwick Tree, also known as the Binary Indexed Tree (BIT), is a data structure that maintains the prefix sums of a dynamic array.** 
 **With this data structure we can update values in the original array and still answer prefix sum queries.** 
 Both operations runs in **logarithmic time**.
@@ -962,7 +1023,7 @@ We can make some observations:
 3) Let be $h = \lfloor\log(n)+1\rfloor$, which is the length of the binary representation of any position in the range $[1,n]$. Since any position can be expressed as the sum of at most $h$ powers of 2, the tree has no more than $h$ levels. In fact, the number of levels is either $h$ or $h-1$, depending on the value of n
 
 Now, let’s delve into the details of how to solve our `sum` and `add` queries on a Fenwick tree.
-### 14.1.1 - Answering a `sum` query
+### 11.1.1 - Answering a `sum` query
 This query involves beginning at a node `i` and traversing up the tree to reach the node `0`. 
 Thus `sum(i)` takes time proportional to the height of the tree, resulting in a time complexity of $\Theta(\log n)$. 
 
@@ -973,7 +1034,7 @@ This works because the ranges of these nodes ($[1,4], [5,6], [7,7]$) collectivel
 Answering a a `sum` query is straightforward **if we are allowed to store the tree's structure.**
 However a significant part of the Fenwick tree's elegance lies in the fact that storing the tree is not actually necessary. 
 This is because **we can efficiently navigate from a node to its parent using a few bit-tricks, which is the reason why the Fenwick trees are also called Binary Indexed trees.**
-#### 14.1.1.1 - Compute the Parent of a Node
+#### 11.1.1.1 - Compute the Parent of a Node
 We want to compute the parent of a node, and we want to it quickly and without representing the structure of the tree.
 
 Let's consider the binary representation of the indexes involved in the query `sum(7)`
@@ -981,8 +1042,7 @@ Let's consider the binary representation of the indexes involved in the query `s
 ![[Pasted image 20240110150658.png | center ]]
 
 **Theorem:** the binary representation of a node's parent can be obtained by removing the trailing one (i.e., the rightmost bit set to 1) from the binary representation of the node itself.
-**Proof:** **TODO**
-### 14.1.2 - Performing an `add`
+### 11.1.2 - Performing an `add`
 Now we consider the operation `add(i,v)`. 
 We need to add the value `v` to each node whose range include the position `i`.
 
@@ -1000,7 +1060,7 @@ If we want to perform `add(5, x)` we just need to modify the nodes in red:
 
 We now know which are the nodes to modify for `add(i, x)`. 
 **Let's discuss how to compute these nodes with bit-tricks.**
-### 14.1.2.1 - Computing the Siblings
+### 11.1.2.1 - Computing the Siblings
 Continuing the above example, starting with `i = 5`, the next node to modify is its right sibling, node 6. 
 Their binary representation is 
 ![[Pasted image 20240110152844.png| center]]
@@ -1014,7 +1074,7 @@ In this case, the rightmost and second trailing one are adjacent. To obtain the 
 Thankfully, this effect is one again achieved by adding the trailing one to the node’s ID.
 
 **The time complexity** of `add` is $\Theta(n)$, as we observe that each time we move to the right sibling of the current node or the right sibling of its parent, the trailing one in its binary rep. shifts at lest one position to the left, and this can occur at most $\lfloor\log(n)\rfloor+1$ times.
-## 14.1.2 - Fenwick Tree in Rust
+## 11.1.2 - Fenwick Tree in Rust
 The following is a minimal implementation. 
 While we’ve transitioned to 0-based indexing for queries, internally, we still use the 1-based indexing to maintain consistency with the examples above.
 
@@ -1072,7 +1132,7 @@ impl FenwickTree {
     }
 }
 ```
-## 14.2 - Fenwick Tree Solution
+## 11.2 - Fenwick Tree Solution
 We are given an array `A[1,n]` initially set to 0. 
 We want to support two operations: 
 - `access(i)` returns `A[i]`
@@ -1116,8 +1176,7 @@ impl UpdateArray {
     }
 }
 ```
-
-# 15 - Nested Segments
+# 12 - Nested Segments
 We are given $n$ segments: $[l_1, r_1],\dots, [l_n, r_n]$ on a line. There are no coinciding endpoints among the segments. 
 The task is to determine and report the number of other segments each segment contains.
 **Alternatively said:** for the segment $i$ we want to count the number of segments $j$ such that the following condition hold: $l_i < l_j \land r_j < r_i$. 
@@ -1125,24 +1184,45 @@ The task is to determine and report the number of other segments each segment co
 We provide two solutions to this problem: 
 - with Fenwick Tree
 - with **Segment Tree**
-## 15.1 - Fenwick Tree Solution
+## 12.1 - Fenwick Tree Solution
 We use a sweep line & Fenwick tree approach. 
 
-First we build the Fenwick tree by adding $1$ in each position that corresponds to the right endpoint of a segment. 
-This way, a `sum(r)` reports the number of segments that end in the range $[1,r]$
+For starters we map the segments to the range $[1,2n]$ and sort them by their starting point. 
+Then we build the Fenwick tree, we scan each segment $[l_i, r_i]$ and add $1$ in each position $r_i$.
 
-Next, we let a sweep line process the segments in increasing order of their left endpoints.
-When we process the segment $[l_i, r_i]$ we compute `sum(r_i - 1)` as the result for the current segment. 
-Before moving to the next segment, we add $-1$ at position $r_i$, to remove the contribution of the right endpoint of the current segment. 
-**said easy:** the Fenwick tree acts like the "counter" variable in a sweep line algorithm. 
-
-The claim is that `sum(r_i - 1)` is the number of segments contained in $[l_i, r_i]$. 
-This is because all the segments that starts before $l_i$ have already been processed, and their right endpoints have been removed from the Fenwick tree.
-Therefore, `sum(r_i - 1)` is the number of segments that starts after $l_i$ and ends before $r_i$
+Now we scan the segments again. 
+When we process the segment $[l_i, r_i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
+Now to find the solution of this problem for the current segment (aka the number of segments contained in the current one) we need to know the number of these segments (the ones that starts before the current one) that also end before the current one, before $r_i$. 
+This is computed with a query `sum(r_i)` on the Fenwick Tree.
+After computing the solution for the current segment we subtract $1$ to position $r_i$, to remove the contribution of the right endpoint of the current segment. 
 
 The following snippet implement the solution above, using the Fenwick tree previously defined. 
-**TODO**
-## 15.2 - Segment Tree
+```rust
+fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
+	let n = input_segments.len();
+	// (start, end, index_in_input)
+	let mut events: Vec<(i32, i32, usize)> = Vec::with_capacity(n);
+	for (i, &(l, r)) in input_segments.iter().enumerate() {
+		events.push((l, r, i));
+	}
+	// sort by starting endpoint
+	events.sort_by(|a, b| a.0.cmp(&b.0));
+	let mut tree = FenwickTree::with_len(input_segments.len()*2 + 1);
+	for i in 0..n {
+		tree.add(events[i].1 as usize, 1);
+	}
+	let mut sol: Vec<(i64, usize)> = Vec::with_capacity(n);
+	for i in 0..n {
+		sol.push((tree.sum(events[i].1 as usize) - 1, events[i].2));
+		tree.add(events[i].1 as usize, -1);
+	}
+	// restore so that the solution are paired with the input ordering
+	sol.sort_by(|a, b| a.1.cmp(&b.1));
+	
+	sol
+}
+```
+## 12.2 - Segment Tree
 **A Segment Tree is a data structure that stores information about array intervals as a tree.**
 This allows answering range queries over an array efficiently, while still being flexible enough to **allow quick modification of the array**.
 We can **find the sum of consecutive array elements**`A[l..r]` or **find the minimum element in a segment** in $O(\log(n))$ time. 
@@ -1159,7 +1239,7 @@ The formal definition of our task is the following: given an array $a[0,\dots,n-
 **Observation:** even our simple form of Segment Tree is an improvement over the simpler approaches: 
 - a naive implementation that uses just the array can update element in O(1) but requires O(n) to compute each sum query
 - a precomputed prefix sums can compute the sum queries in O(1) but updating an array element requires O(n) changes to the prefix sums
-### 15.2.1 - Structure of the Segment Tree
+### 12.2.1 - Structure of the Segment Tree
 We can take a divide-and-conquer approach when it comes to array segments.
 We compute and store the sum of the elements of the whole array, i.e. the sum of the segment $a[0,\dots,n-1]$. 
 Then we split the array into two halves $a[0,\dots,n/2 -1]$ and $a[n/2,\dots, n-1]$, compute the sum of each halves and store it. Each of this halves are split in half, and so on until all segments reach size 1. 
@@ -1175,7 +1255,7 @@ Thus, the number of vertices in the worst case can be estimated by the sum
 $$1+2+4+\dots+ 2^{\lceil\log(n)\rceil+1}<4n$$
 Mind that whenever $n$ is not a power of 2, not all levels of the Segment Tree will be completely filled, as shown in the image. 
 **The height of a Segment Tree** is $O(\log(n))$, because when going down the root to the leaves the size of the segments decrease approximately by half. 
-#### 15.2.1.1 - Construction
+#### 12.2.1.1 - Construction
 Before constructing the segment tree we need to decide: 
 - the value that gets stored at each node of the segment tree. In a sum segment tree a node would store the sum of the elements in its range $[l,r]$
 - the merge operation that merges two sibling in a segment tree. In a sum segment tree, the two nodes corresponding to the ranges $a[l_1,\dots,r_1]$ and $a[l_2,\dots,r_2]$ would be merged into a node corresponding to the range $a[l_1,\dots,r_2]$ by adding the values of the two nodes
@@ -1193,14 +1273,14 @@ The construction procedure, if called of a non-leaf vertex, does the following:
 
 We start the construction at the root vertex, and hence, we are able to compute the entire segment tree. 
 The **time complexity of the construction** is O(n), assuming that the merge operation is O(1), as the merge operation gets called n times, which is equal to the number of internal nodes in the segment tree.
-#### 15.2.1.2 - Sum Queries
+#### 12.2.1.2 - Sum Queries
 We receive two integers $l$ and $r$, and we have to compute the sum of the segment $a[l,\dots,r]$ in $O(\log(n))$ time. 
 To do this we will traverse the tree and use the precomputed sums of the segments. 
 
 Let's assume that we are currently at the vertex that covers the segment $a[tl,\dots,tr]$. 
 There are three possible cases: 
 1) the segment $a[l,\dots,r]$ is equal to the corresponding segment of the current index, then we are finished and we return the sum that is stored in the vertex
-2) the segment of the query can fall completely into the domain of either the left or the right child. In this case we can simply go to the child vertex, which corresponding segment covers the query segment, and execute the algorithm described here with that vertex
+2) the segment of the query fall completely into the domain of either the left or the right child. In this case we can simply go to that child vertex, which corresponding segment covers the query segment, and execute the algorithm described here with that vertex
 3) the query segment intersects with both children. In this case we have no other option as to make two recursive calls, one for each child. First we go to the left child, compute a partial answer for this vertex (i.e. the sum of values of the intersection), then go the right child, compute the partial answer using that vertex, and then combine the answers.
 
 So processing a sum query is a function that recursively calls itself once with either the left or the right child (without changing the query boundaries), or twice, once for the left and once for the right child (by splitting the query into two subqueries). 
@@ -1214,9 +1294,8 @@ Obviously we will start the traversal from the root vertex of the Segment Tree.
 **Let's now reason about the complexity of the algorithm.**
 We have to show that we can compute the sum queries in $O(\log(n))$.
 **Theorem:** for each level we only visit no more than four vertices.
-**Proof:** **TODO**
 And since the height of the tree is $O(\log(n))$, we receive the desired running time. 
-#### 15.2.1.3  - Update Queries
+#### 12.2.1.3  - Update Queries
 Now we want to modify a specific element in the array, let's say we want to do the assignment $a[i] = x$. And we have to rebuild the Segment Tree, such that it corresponds to the new, modified array. 
 
 This query is easier than the sum query. Each level of a segment tree forms a partition of the array. Therefore an element $a[i]$ only contributes to one segment from each level. 
@@ -1226,168 +1305,18 @@ It is easy to see that the update request can be implemented using a recursive f
 
 **Example:** given the same array as before, we want to perform the update $a[2] = 3$ 
 ![[Pasted image 20240112112424.png | center | 450]]
-### 15.2.2 - Simple Implementation
-The main consideration is how to store the Segment Tree. 
-Of course we can define a   `Vertex` struct and create objects, that store the boundaries of the segment, its sum and additionally also pointers to its child vertices. 
-However, this requires storing a lot of redundant information in the form of pointers. 
-We use a simple trick to make this a lot more efficient by **using an implicit data structure**: only storing the sums in an array.
+### 12.2.2 - Simple Implementation
+**TODO** use implementation from the exercises "nested segment"
 
-The sum of the root vertex at index 1, the sums of its two child vertices at indices 2 and 3, the sums of the children of those two vertices at indices 4 to 7, and so on. With 1-indexing, conveniently the left child of a vertex at index   $i$  is stored at index   $2i$ , and the right one at index   $2i + 1$ . 
-Equivalently, the parent of a vertex at index   $i$  is stored at   $i/2$  (integer division).
-**This simplifies the implementation a lot.** 
-We don't need to store the structure of the tree in memory. It is defined implicitly. We only need one array which contains the sums of all segments.
-
-As noted before, we need to store at most   $4n$  vertices. 
-It might be less, but for convenience we always allocate an array of size  $4n$ . 
-There will be some elements in the sum array, that will not correspond to any vertices in the actual tree, but this doesn't complicate the implementation.
-
-**Here's the Rust implementation of what we have seen**
-```rust
-/// A struct representing a Segment Tree
-struct SegmentTree {
-	/// The size of the array
-	n: usize,
-	/// The array to store the segment tree
-	t: Vec<i32>,
-}
-
-impl SegmentTree {
-	/// Constructor to initialize the segment tree
-	///
-	/// # Arguments
-	///
-	/// * `a` - The input array
-	///
-	/// # Returns
-	///
-	/// A new instance of `SegmentTree`
-	fn new(a: &[i32]) -> SegmentTree {
-		let n = a.len();
-		let mut t = vec![0; 4 * n];
-		SegmentTree::build(&mut t, a, 1, 0, n - 1);
-		SegmentTree { n, t }
-	}
-
-	/// Build the segment tree recursively
-	///
-	/// # Arguments
-	///
-	/// * `t` - The segment tree array
-	/// * `a` - The input array
-	/// * `v` - The current vertex
-	/// * `tl` - The left boundary of the current segment
-	/// * `tr` - The right boundary of the current segment
-	fn build(t: &mut Vec<i32>, a: &[i32], v: usize, tl: usize, tr: usize) {
-		if tl == tr {
-			// If the segment has a single element, store it in the tree
-			t[v] = a[tl];
-		} else {
-			// Otherwise, recursively build the left and right subtrees
-			let tm = (tl + tr) / 2;
-			SegmentTree::build(t, a, v * 2, tl, tm);
-			SegmentTree::build(t, a, v * 2 + 1, tm + 1, tr);
-			// Combine the values of the left and right subtrees
-			t[v] = t[v * 2] + t[v * 2 + 1];
-		}
-	}
-
-	/// Query the sum in a range [l, r]
-	///
-	/// # Arguments
-	///
-	/// * `v` - The current vertex
-	/// * `tl` - The left boundary of the current segment
-	/// * `tr` - The right boundary of the current segment
-	/// * `l` - The left boundary of the query range
-	/// * `r` - The right boundary of the query range
-	///
-	/// # Returns
-	///
-	/// The sum in the specified range
-	fn sum(&self, v: usize, tl: usize, tr: usize, l: usize, r: usize) -> i32 {
-		if l > r {
-			// If the query range is invalid, return 0
-			0
-		} else if l == tl && r == tr {
-			// If the segment is within the query range, return its value
-			self.t[v]
-		} else {
-			// Otherwise, recursively query the left and right subtrees
-			let tm = (tl + tr) / 2;
-			self.sum(v * 2, tl, tm, l, std::cmp::min(r, tm))
-			+ self.sum(v * 2 + 1, tm + 1, tr, std::cmp::max(l, tm + 1), r)
-		}
-	}
-	
-	/// Update a value at a specific position
-	///
-	/// # Arguments
-	///
-	/// * `v` - The current vertex
-	/// * `tl` - The left boundary of the current segment
-	/// * `tr` - The right boundary of the current segment
-	/// * `pos` - The position to update
-	/// * `new_val` - The new value to set at the specified position
-	fn update(
-		&mut self, 
-		v: usize, 
-		tl: usize, 
-		tr: usize, 
-		pos: usize, 
-		new_val: i32
-	) {
-		if tl == tr {
-			// If the segment has a single element, update it
-			self.t[v] = new_val;
-		} else {
-			// Otherwise, recursively update the left or right subtree
-			let tm = (tl + tr) / 2;
-			if pos <= tm {
-			self.update(v * 2, tl, tm, pos, new_val);
-			} else {
-			self.update(v * 2 + 1, tm + 1, tr, pos, new_val);
-			}
-			// Update the current node
-			self.t[v] = self.t[v * 2] + self.t[v * 2 + 1];
-		}
-	}
-
-	/// Print the segment tree in a meaningful way
-	///
-	/// # Arguments
-	///
-	/// * `v` - The current vertex
-	/// * `tl` - The left boundary of the current segment
-	/// * `tr` - The right boundary of the current segment
-	fn print_tree(&self, v: usize, tl: usize, tr: usize, indent: usize) {
-		// Print the current node
-		println!(
-			"{0:width$}Node {1}: [{2}, {3}] = {4}",
-			"",
-			v,
-			tl,
-			tr,
-			self.t[v],
-			width = indent
-		);
-		// If it's not a leaf node, recursively print left and right subtrees
-		if tl < tr {
-			let tm = (tl + tr) / 2;
-			self.print_tree(v * 2, tl, tm, indent + 2);
-			self.print_tree(v * 2 + 1, tm + 1, tr, indent + 2);
-		}
-	}
-}
-```
-### 15.2.3 Lazy Propagation
+### 12.2.3 Lazy Propagation
 Segment Tree allows applying modification queries to an entire segment of contiguous elements, and perform the query in the same time $O(\log(n))$.
 When there are many updates and updates are done on a range, we can postpone some updates (avoid recursive calls in update) and do those updates only when required.
 
-**TODO:** https://cp-algorithms.com/data_structures/segment_tree.html
-## 15.3 - Segment Trees Solution
+**theory_TODO:** https://cp-algorithms.com/data_structures/segment_tree.html
+## 12.3 - Segment Trees Solution
 **Let's now solve nested segments with a Segment Tree**
-**TODO**
-# 16 - Powerful Array
+**TODO: comment it it from my implementation**
+# 13 - Powerful Array
 An array of positive integers $a_1,\dots,a_n$ is given. Let us consider its arbitrary subarray $a_l, a_{l+1},\dots, a_r$, where $1 \le l \le r \le n$.
 For every positive integer $s$ we denote by $K_s$ the number of occurrences of $s$ into the subarray.
 We call the **power** of the subarray the sum of products $K_s \cdot K_s \cdot s$ for every positive integer $s$. 
@@ -1396,7 +1325,7 @@ The sum contains only finite number of nonzero summands as the number of differe
 You should calculate the power of $t$ given subarrays.
 
 **Besides the trivial solutions, we introduce a new algorithmic technique.**
-## 16.1 - Mo's Algorithm 
+## 13.1 - Mo's Algorithm 
 The Mo’s Algorithm is a powerful and efficient technique for solving a wide variety of range query problems. 
 It becomes particularly **useful for kind of queries where the use of a Segment Tree or similar data structures is not feasible.** 
 **This typically occurs when the query is non-associative, meaning that the result of a query on a range cannot be derived by combining the answers of the subranges that cover the original range.**
@@ -1531,7 +1460,7 @@ Mo’s algorithm is an offline approach, which means we cannot use it when we ar
 
 When implementing Mo’s algorithm, the most challenging aspect is implementing the functions `add` and `remove`. 
 There are query types for which these operations are not as straightforward as in previous problems and require the use of more advanced data structures than just an array of counters
-## 16.2 - Solution
+## 13.2 - Solution
 We can just use Mo's Algorithm and a little bit of attention in updating the answer after a `add` or a `remove`.
 
 The solution is identical to the one seen in the previous problem, with one difference. 
@@ -1553,18 +1482,18 @@ let mut remove = |i| {
 	sum += counters[a[i]] * counters[a[i]] * a[i];
 };
 ```
-# 17 - Longest Common Subsequence
+# 14 - Longest Common Subsequence
 Given two strings, `S1` and `S2`, the task is to find the length of the longest common subsequence, i.e. longest subsequence present in both strings. 
 **Observation:** subsequence != substring. A subsequence do not have to be contiguous. 
 
 **There are many ways to attack this problem, we use it to talk about Dynamic Programming.**
-## 17.1 - Dynamic Programming
+## 14.1 - Dynamic Programming
 Dynamic Programming, like divide-and-conquer, solves problems by combining solutions of subproblems. 
 Divide-and-Conquer algorithms partitions the problem into disjoint subproblems, solve the subproblems and then combine their solutions to solve the original problem. 
 In contrast, **dynamic programming applies when subproblems overlap, that is, when sub-problems share sub-sub-problems.**
 In this context a divide-and-conquer algorithm does more work than necessary, repeatedly solving the common sub-sub-problems. 
 **A dynamic programming algorithm solves each sub-sub-problem just once and then saves its answer in a table, avoiding the work of recomputing the answer every time it solves each sub-sub-problem.** 
-### 17.1.2 - A first easy problem: Fibonacci
+### 14.1.2 - A first easy problem: Fibonacci
 Fibonacci numbers are defined as 
 $$
 \begin{align}
@@ -1625,8 +1554,7 @@ int iterativeFibo(n) {
 	return F[n];
 }
 ```
-
-## 17.1.3 Memorization vs Tabulation
+### 14.1.3 Memorization vs Tabulation
 Tabulation and Memorization are two common techniques used in dynamic programming to optimize the solution of problems by avoiding redundant computations and storing intermediate results.
 1. **Tabulation:**
     - **Definition:** **Tabulation involves solving a problem by building a table** **(usually a 2D array or matrix) and filling it in a bottom-up manner. The table is filled iteratively, starting from the base cases and moving towards the final solution.**
@@ -1653,8 +1581,7 @@ Tabulation and Memorization are two common techniques used in dynamic programmin
 
 In summary, both tabulation and memorization are techniques used to optimize dynamic programming solutions by avoiding redundant computations. 
 Tabulation builds a table bottom-up, while memorization caches results top-down. 
-
-## 17.2 - Solution
+## 14.2 - Solution
 Now that we have refreshed dynamic programming we can go back to our problem. 
 
 The subproblems here ask to compute the longest common subsequence (LCS) of prefixes of the two sequences `S1` and `S2`: given two prefixes `S1[1,i]` and `S[1,j]` our goal is to compute `LCS(S1[1,i], S2[1,j])`
@@ -1697,14 +1624,14 @@ function lengthLCS(X[1..m], Y[1..m]) {
 	return C[m,n]
 }
 ```
-# 18 - Minimum Number of Jumps
+# 15 - Minimum Number of Jumps
 Consider an array of `N` integers `arr[]`. 
 Each element represents the maximum length of the jump that can be made forward from that element. 
 This means if `arr[i] = x`, then we can jump any distance `y` such that `y <= x`.  
 Find the minimum number of jumps to reach the end of the array starting from the first element. 
 If an element is 0, then you cannot move through that element.  
 **Note:** Return -1 if you can't reach the end of the array.
-## 18.1 - Solution
+## 15.1 - Solution
 **We use Dynamic Programming to solve the problem.** 
 More specifically we use **Tabulation** to solve the problem: 
 1) create an array `jumps[]` from left to right such that `jumps[i]` indicate the minimum number of jumps needed to reach the position `i` starting from the start
@@ -1741,10 +1668,8 @@ fn min_num_of_jumps(arr: &[i32]) -> i32 {
 - `i < j + arr[j]`: where we want to go is reachable from `j` with the possible number of jumps that we can do from `j`, aka `arr[j]`
 - `jumps[j]`: we can actually reach `j` from the start
 ![[Pasted image 20240116171229.png |center| 600]]
-# 19 - Partial Equal Subset Sum
+# 16 - Partial Equal Subset Sum
 Given an array `arr[]` of size `N`, check if it can be partitioned into two parts such that the sum of elements in both parts is the same.
-## 19.1 - Subset Sum
-Given a set $S$ of $n$ non-negative integers, and a value $v$, determine if there is a subset of the given set with sum equal to the given $v$. 
 
 This problem is a well-known NP-Hard problem, which admits a pseudo-polynomial time algorithm. 
 The problem has a solution which is almost the same as **0/1 Knapsack Problem.**
@@ -1773,7 +1698,7 @@ $$K[V][i] = \min(K[V][i-1], K[V-v[i][i-1])$$
 The solution is $\max(a:K[V,n]\le C)$ 
 
 ---
-
+## 16.2 - Solution
 As in the 0/1 knapsack problem we construct a matrix $W$ with $n+1$ rows and $v+1$ columns. 
 Here the matrix contains booleans. 
 
@@ -1785,8 +1710,8 @@ The entries of the first column $W[][0]$ are set to true, as with the first $j$ 
 Entry $W[i][j]$ is true either if $W[i-1][j]$ is true or $W[i-1][j - S[i]]$ is true. 
 - $W[i-1][j] = \text{T}$, we simply do not take the $i$-th element, and with the elements in $1, i-1$ we already can make a subset which sum is $j$ 
 - $W[i-1][j-S[i]] = \text{T}$, as before: if the subset with one element less than I has sum equal to $j - S[i]$ it means that if we take $i$ we reach exactly a subset with sum $j$
-## 19.2 - Solution
-The solution is basically the adapted from the previous problems:
+
+**Said easy:**
 - we divide the sum of the array by 2: if the sum is not divisible by 2 it means that there cannot be two partitions that summed gives the the sum.
 - once divided is the same problem above: 
 	- exists a subset of the elements that summed gives `arr.iter().sum() / 2`?
@@ -1827,7 +1752,7 @@ fn partial_equal_subset_sum(arr: &[i32]) -> bool {
 
 The **then branch** of the `if` is crucial: if `arr[i - 1]` is greater than `j`, it means that including the current element `i` in the subset would make the sum exceed the current target sum `j`.
 Therefore, the solution at `sol[i][j]` would be the same as the solution without including the current element, i.e., `sol[i - 1][j]` (aka, we do not include `i`, as we can't)
-# 20 - Longest Increasing Subsequence
+# 17 - Longest Increasing Subsequence
 Given an array of integers, find the **length** of the **longest (strictly) increasing subsequence** from the given array.
 
 As an example consider the sequence $S=\{10,22,9,21,33,50,41,60,80\}$.
@@ -1838,7 +1763,7 @@ Consider the sequence $S[1,n]$ and let $LIS(i)$ be the $LIS$ of the prefix $S[1,
 $$LIS(i) = \begin{cases}1 + \max(LIS(j)\ |\ 1\le j\le i\ \text{and}\ S[j] < S[i]\\ 
 1 \text\ \ \ \ \text{if such $j$ does not exists}
 \end{cases}$$
-## 20.1 - Solution
+## 17.1 - Solution
 Due to optimal substructure and overlapping subproblem property, we can also utilize Dynamic programming to solve the problem. Instead of memoization, we can use the nested loop to implement the recursive relation.
 
 The outer loop will run from `i = 1 to N` and the inner loop will run from `j = 0 to i` and use the recurrence relation to solve the problem.
@@ -1847,13 +1772,19 @@ The reasoning is the following:
 - The outer loop (`for i in 1..n`) iterates over each element of the array starting from the second element.
 - The inner loop (`for j in 0..i`) iterates over elements before the current element `arr[i]`.
 - The if statement checks if the current element `arr[i]` is greater than the element at index `j` and if increasing the length by 1 (`lis[j] + 1`) results in a longer LIS ending at index `i`. If true, it updates `lis[i]` accordingly.
-## 20.2 - Smarter Solution
-**TODO**
-# 21 - Longest Bitonic Sequence
+## 17.2 - Smarter Solution: Speeding up LIS
+The main idea of the approach is to simulate the process of finding a subsequence by maintaining a list of “buckets” where each bucket represents a valid subsequence. Initially, we start with an empty list and iterate through the input `nums` vector from left to right.
+
+For each number in `nums`
+- If the number is greater than the last element of the last bucket (i.e., the largest element in the current subsequence), we append the number to the end of the list. This indicates that we have found a longer subsequence.
+- Otherwise, we perform a binary search on the list of buckets to find the smallest element that is greater than or equal to the current number. This step helps us maintain the property of increasing elements in the buckets.
+- Once we find the position to update, we replace that element with the current number. This keeps the buckets sorted and ensures that we have the potential for a longer subsequence in the future.
+
+# 18 - Longest Bitonic Sequence
 Given an array `arr[0 … n-1]` containing n positive integers, a subsequence of `arr[]` is called **bitonic** if it is first increasing, then decreasing. 
 Write a function that takes an array as argument and returns the length of the longest bitonic subsequence. 
 A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty. 
-## 21.1 - Solution
+## 18.1 - Solution
 This problem is a slight variation of the previous problem. 
 Let the input array `arr[]` be of length `n`. 
 We need to construct two arrays `lis[]` and `lds[]` using the DP solution of the Longest Increasing Subsequence
@@ -1866,7 +1797,243 @@ To compute `lds[i]` we iterate through the array backwards and apply the same re
 
 **Basically the output is the sum of the longest increasing sequence left to right and the longest increasing sequence right to left**
 
+The following is the implementation of the solution:
+```rust
+fn longest_bitonic_subsequence(arr: &[i32]) -> i32 {
+	let n = arr.len();
+	// exactly as LIS
+	let mut lis = vec![1; n];
+	for i in 1..n {
+		for j in 0..i {
+			if arr[i] > arr[j] && lis[i] < lis[j] + 1 {
+				lis[i] = lis[j] + 1;
+			}
+		}
+	}
+	// a decreasing sequence visited in revers is an increasing sequence
+	let mut lds = vec![1; n];
+	for i in (0..n - 1).rev() {
+		for j in (i + 1..n).rev() {
+			if arr[i] > arr[j] && lds[i] < lds[j] + 1 {
+				lds[i] = lds[j] + 1;
+			}
+		}
+	}
+	// return the maximum value of lis[i] + lds[i] - 1
+	lis.iter().zip(&lds).map(|(l, d)| l + d - 1).max().unwrap_or(0)
+}
+```
+# 19 - Meetings in One Room
+There is **one** meeting room in a firm. 
+There are `N` meetings in the form of `(start[i], end[i])` where `start[i]` is start time of meeting `i` and `end[i]` is finish time of meeting `i`.  
+Find the maximum number of meetings that can be accommodated in the meeting room, knowing that only one meeting can be held in the meeting room at a particular time.
 
+**Note:** Start time of one chosen meeting can't be equal to the end time of the other chosen meeting.
 
+There are various ways to solve the problem, we use it to present **greedy algorithms.**
+## 19.1 - Greedy Algorithms
+A **greedy algorithm** is any algorithm that follows the problem-solving heuristic of making the locally optimal choice at each stage. 
+In many problems a greedy strategy does not produce an optimal solution, but a greedy heuristic can yield locally optimal solutions that approximate a globally optimal solution in a reasonable amount of time. 
 
+**Example:** a greedy strategy for the Travelling Salesman Problem (TSP) is the heuristic "at each step of the journey visit the nearest city". 
+This heuristic does not intend to find the best solution, but it terminates in a reasonable number of steps; finding an optimal solution to such a complex problem typically requires unreasonably many steps.
+**Note:** this greedy approach is not very good on the TSP, as the current optimal choice is based on previous choices, and greedy algorithms never reconsider the choices they have made so far.
 
+Most problems for which greedy algorithms yields good solutions (aka good approximation of the globally optimal solution) have two property: 
+1) **greedy choice property:** we can make whatever choice seems best at the moment and then solve the subproblems that arise later. The choice made by a greedy algorithm may depend on choices made so far, but not on future choices or all solutions to the subproblem. It iteratively makes one greedy choice after another, reducing each given problem into a smaller one. In other words **a greedy algorithm never reconsider its choices**. This is **the main difference from dynamic programming**, which is exhaustive and is guaranteed to find the solution. After every stage, dynamic programming makes decisions based on all the decisions made at the previous stage and may reconsider the previous stage's algorithmic path to the solution
+2) **optimal substructure:** a problem exhibits optimal substructure if an optimal solution to the problem contains optimal solutions to the sub-problems. 
+## 19.2 - Solution
+We use the greedy approach to solve the problem: 
+- sort all the meetings in increasing order using their finish time
+- select the first meeting of the sorted list as the first meeting that will be held, push it to the list `results` of meetings and set a variable `time_limit` to the finish time of the first meeting 
+- iterate from the second meeting to the last one: if the starting time of the current meeting is greater that the previously selected meeting's finish time then select the current meeting
+	- push it in `results`
+	- update the `time_limit` variable to the finishing time of the current meeting
+
+**Observation:** the problem requires only to give the **maximum number** of meetings that we can have in one room. 
+We do not care about the meetings that can be held, so `results` is useless. 
+Also we can sort the array of meetings that we have received, as there is no problem in messing their order. 
+In the end, we need only the variable `time_limit` and a variable `result` to increment every time we find a meeting that can happen. 
+
+The following implementation solves the problem: 
+```rust
+fn meetings_in_a_room(meetings: &mut Vec<(i32, i32)>) -> i32 {
+	meetings.sort_by(|a, b| a.1.cmp(&b.1));
+	let mut time_limit = meetings[0].1;
+	let mut result = 1;
+	for meeting in meetings.iter().skip(1) {
+		// if the current meeting starts after the end of the last
+		// meeting than we can have the meeting in the room
+		if meeting.0 > time_limit {
+			result += 1;
+			time_limit = meeting.1;
+		}
+	}
+	result
+}
+```
+# 20 - Wilbur and Array
+Wilbur the pig is tinkering with arrays again. 
+He has the array $a_1,\dots,a_n$ initially consisting on $n$ zeroes.
+At one step he can choose any index $i$ and either add $1$ to all elements $a_i,\dots, a_n$ or subtract $1$ from all elements $a_i,\dots,a_n$. 
+His goal is to end up with the array $b_1,\dots,b_n$. 
+Of course Wilbur wants to achieve this goal in the minimum number of steps and asks you to compute this value. 
+
+**Example:** 
+- input: 
+	- 5, the size of the array $a$ `= [0,0,0,0,0]`
+	- `[1,2,3,4,5]`, the target array $b$
+- output: 
+	- 5, as we need five `+1` operation, one for every element `i`
+		- `i = 0: +1` $\rightarrow$ `a = [1,1,1,1,1]`
+		- `i = 1: +1` $\rightarrow$ `a = [1,2,2,2,2]`
+		- ...
+
+## 20.1 - Solution
+The solution is based upon the observation that the minimum number of operations is equal to the sum of differences (in absolute value) between consecutive elements. 
+Given the array $v[1\dots n]$ we have that
+$$\text{result} = v[1] + \Sigma_{i=2}^n\ |v_i-v_{i-1}|$$
+Why this works is pretty intuitive. 
+
+Here's the rust implementation: 
+```rust
+fn wilbur_and_array(arr: &[i32]) -> i32 {
+	let mut result = arr[0].abs();
+	for i in 1..arr.len() {
+		result += (arr[i] - arr[i-1]).abs();
+	}
+	result
+}
+```
+# 21 - Woodcutters
+Little Susie listens to fairy tales before bed every day. Today's fairy tale was about wood cutters and the little girl immediately started imagining the choppers cutting wood. 
+She imagined the situation that is described below.
+
+There are $n$ trees located along the road at points with coordinates $x_1,\dots,x_n$
+Each tree has its height $h_i$.
+Woodcutters can cut a tree and fell it to the left or to the right. 
+After that it occupies one of the segments $[x_i - h_i, x_i]$ or $[x_i, x_i+h_i]$. 
+The tree trait that is not cut down occupies a single point with coordinate $x_i$. 
+Woodcutters can fell a tree if the segment to be occupied by the fallen tree does not contain any occupied point. 
+The woodcutters want to process as many trees as possible. 
+**What is the maximum number of trees to fell?**
+## 21.1 - Solution
+We use a greedy approach to solve the problem. 
+1) we always cut the first tree, making it fall to the left
+2) we always cut the last tree, making it fall to the right
+3) we **prioritize** **left falls**, meaning that if we can make the current tree falling to the left we always will: consider the current tree $i$
+	1) if the previous tree is at a point $x_{i-1}$ that is smaller (aka farther) that where the current tree would fall, then we cut the tree and make it fall to the left
+	2) else, if the current tree position $x_i$ plus its height $h_i$ do not fall over next tree $i+1$ we cut to the right
+		1) in this case we also update $x_i$ as $x_i + h_i$, the tree has fallen to the right and from the standpoint of the next tree its position is $x_i+h_i$
+	3) otherwise we do nothing
+
+The code makes it even more clear: 
+```rust
+// trees are an array of pairs (x_i, h_i)
+fn woodcutters(trees: &mut [(i32, i32)]) -> i32 {
+	let n = trees.len();
+	// we always cut the first tree to the left
+	// and the right tree to the right
+	let mut cutted = 2;
+	// hence we skip the first and last tree
+	for i in 1..n-1 {
+		// left fall: if the previous tree is at coordinate x_i-1
+		// and the current trees can fall to the left then we cut
+		if trees[i-1].0 < trees[i].0 - trees[i].1 {
+			cutted += 1;
+			continue;
+		}
+		// can't fall to the left, fall to the right
+		if trees[i].0 + trees[i].1 < trees[i + 1].0 {
+			cutted += 1;
+			trees[i].0 += trees[i].1;
+		}
+	}
+	cutted
+}
+```
+# 22 - Bipartite Graph
+Given an adjacency list of a graph **adj**  of V no. of vertices having 0 based index. Check whether the graph is bipartite or not.
+
+**The Problem in detail:**
+A **Bipartite Graph** **is a graph whose vertices can be divided into two independent sets**, $U$ and $V$, such that every edge $(u, v)$ either connects a vertex from $U$ to $V$ or a vertex from $V$ to $U$. 
+In other words, for every edge $(u, v)$, either $u$ belongs to $U$ and $v$ to $V$, or $u$ belongs to $V$ and $v$ to $U$. 
+We can also say that there is no edge that connects vertices of same set.
+
+**A bipartite graph is possible if the graph coloring is possible using two colors such that vertices in a set are colored with the same color.**
+## 25.1 - Graphs 101
+**theory_TODO**
+## 25.2 - Solution
+We use the Breadth-First Search (BFS) to solve the problem: 
+- assign `red` to the source vertex
+- color with `blue` all the neighbors 
+- color with `red` all neighbor's neighbor
+- this way, assign color to all vertices such that it satisfies all the constraints of $m$ way coloring, where $m=2$
+- **while assigning colors, if we find a neighbor of the same color of the current vertex, we return false as the graph cannot be bipartite.**
+
+```rust
+use std::collections::{VecDeque, HashMap};
+
+fn is_bipartite(graph: &Vec<Vec<i32>>) -> bool {
+    let n_nodes = graph.len();
+    let mut color_arr: HashMap<usize, i32> = HashMap::new();
+
+    for start_node in 0..n_nodes {
+	    // if the current node has not yet an assigned color
+        if !color_arr.contains_key(&start_node) {
+	        // then we assign to it a color and color its neighbors
+			// if we find a neighbor of the same color we fail
+            if !bfs(&graph, start_node, &mut color_arr) {
+                return false;
+            }
+        }
+    }
+
+    true
+}
+
+fn bipartite_bfs(
+	graph: &Vec<Vec<i32>>, 
+	start: usize, 
+	color_arr: &mut HashMap<usize, i32>) -> bool 
+{
+    let n_nodes = graph.len();
+    let mut queue = VecDeque::new();
+    queue.push_back(start);
+    color_arr.insert(start, 1);
+
+    while let Some(node) = queue.pop_front() {
+        for neighbor in 0..n_nodes {
+            if graph[node][neighbor] == 1 {
+                if let Some(color) = color_arr.get(&neighbor) {
+                    if *color == color_arr[&node] {
+                        return false; //not bipartite
+                    }
+                } else {
+                    color_arr.insert(neighbor, 1 - color_arr[&node]);
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+    }
+    true
+}
+
+fn main() {
+    let graph1 = vec![
+        vec![0, 1, 0],
+        vec![1, 0, 1],
+        vec![0, 1, 0],
+    ];
+    assert!(is_bipartite(&graph1));
+
+    let graph2 = vec![
+        vec![0, 0, 1, 1],
+        vec![0, 0, 0, 1],
+        vec![1, 0, 0, 1],
+        vec![1, 1, 1, 0],
+    ];
+    assert!(!is_bipartite(&graph2));
+}
+
+```
