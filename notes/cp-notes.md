@@ -2,64 +2,41 @@ This notes are problem-centered: we introduce a problem and then the theory to e
 **Use at Your Own Risk.**
 # 1 - Contiguous Sub-Array with Max Sum
 ![[Screenshot from 2024-01-05 09-29-59.png | center | 700]]
-## 1.1 - Trivial Solution, O(n^3)
-This is the obvious brute force method, where we compute every single subarray and store the current maximum sum.
-```rust
-fn subarray_max_sum(arr: &[i32]) {
-	let mut max = 0; 
-	for i in 0..arr.len() {
-		for j in i..arr.len() {
-			let mut sum = 0; 
-			for k in i..j {
-				sum = sum + a[k];
-			}
-			if sum > max {
+### 1.1.1 - Brute Force, O(n^2)
+For each possible subarray we compute the sum and store the maximum
+```java
+brute_force(a[])
+	n = a.length()
+	max = 0
+	for i = 0 to n
+		sum = 0
+		for j = i to n
+			sum += a[j]
+			if sum > max
 				max = sum
-			}
-		}
-	}
-	println!("{}", max);
-}
-```
-### 1.1.1 - Optimized Brute Force, O(n^2)
-We notice that the most inner for loop is useless, as we can compute the sum of the current subarray, for every subarray, with just the `j` index
-```rust
-fn subarray_max_sum(arr: &[i32]) {
-	let mut max = 0; 
-	for i in 0..arr.len() {
-		for j in i..arr.len() {
-			sum = sum + a[j]; 
-			if sum > max {
-				max = sum;
-			}
-		}
-	}
-	println!("{}", max);
-}
+	return max
 ```
 ## 1.2 - Optimal Solution: Kadane's algorithm, O(n)
 Kadane's algorithm is based on two properties of the subarray with maximum sum: 
-1) sum of values in any prefix of the optimal subarray is positive. By contradiction, **remove a negative prefix to get a subarray with a larger sum**
+1) **sum of values in any prefix of the optimal subarray is positive.** By contradiction, remove a negative prefix to get a subarray with a larger sum
 2) **the value that precede the first value of the optimal subarray is negative.** By contradiction, include this positive value to get a subarray with a larger sum
 
-```rust 
-fn subarray_max_sum(arr: &[i32]) {
-	let mut max = 0;
-	let mut sum = 0;
+To solve the problem we use Kadane's algorithm: 
+```java 
+kadane_algorithm(a[])
+	n = a.length()
+	max = 0
+	sum = 0
 
-	for i in 0..arr.len() {
-		if sum > 0 {
-			sum = sum + arr[i]
-		} else {
+	for i = 0 to n
+		if sum > 0 // property 1)
+			sum += arr[i]
+		else // property 2)
 			sum = arr[i]
-		} 
 
-		if sum > max {
-			max = sum;
-		}
-	}
-	println!("{}", max);
-}
+		max = Math.max(sum, max)
+
+	return max
 ```
 
 ![[IMG_0394.png | center | 600]]
@@ -74,26 +51,35 @@ The difference between the smaller height and the height of the current element 
 ## 2.2 - Smart Solution: Precomputation, O(n)
 **The point is to think locally, not globally.**
 **We can compute the left and right leaders.** 
-Given the array $h$ of heights, we compute:
+
+An element of array is a **right leader** if it is greater than or equal to all the elements to its right side. The rightmost element is always a leader.
+
+Given the array $h$ of heights, we use two arrays to store the leaders:
 $$
 \begin{align}
 	\text{LL} &= \max_{j < i} h[j] \\
 	\text{RL} &= \max_{j > i} h[j]
 \end{align}
 $$
-Then, how many units of water we can find on top of the cell $i$?
+we then have that $LL[i]$ is the left leader for the position $i$, same goes for $RL$
+
+Now, how many units of water we can find on top of the cell $i$?
+The minimum height between the left and right leader of the current position, minus $h[i]$, the height of the current position: 
 $$w(i) = \min(\max_{j < i}h[j], \max_{j > i}) - h[i]$$
 ![[Pasted image 20240105111518.png | center | 500]]
+
 ## 2.3 - Optimal Solution: Two Pointers, O(N)
 The idea is taken from the previous solution, where we only use two variables to store the currently "meaningful" leaders. 
 
-We take two pointers, `left` and `right`. We initialize `left` to `0` and `right` to the last index `N-1`. 
-We also create two variables, `left_max` and `right_max`. They represent the maximum left/right height seen so far. 
-Since `left` is the first `left_max` is `0`, same for `right_max`. This is intuitive: we can't store water in the first and last column. 
+We take two pointers, `left` and `right` and we initialize `left` to `0` and `right` to the last index `n-1`. 
+We also create two variables, `left_max` and `right_max`, they represent the maximum left/right height seen so far. 
 
-Now we iterate, as long `left <= right`. 
-We have to decide which pointer we have to shift: we shift the pointer that has smaller height value: 
-- if `heights[left] <= heights[right]` we shift `left`
+Since `left` is the first `left_max` is `0`, same for `right_max`. 
+This is intuitive: we can't store water in the first and last column. 
+
+Now we iterate, as long `left < right`. 
+We have to decide which pointer we have to shift: **we shift the pointer that has smaller height value:** 
+- if `heights[left] < heights[right]` we shift `left`
 - we shift `right` otherwise
 
 Now, if we have that `heights[left] > left_max` we can't store any water over the position pointed by `left`, **it would fall as left_max is not high enough**. 
@@ -103,42 +89,32 @@ And then we finally shift `left` by `1`.
 
 The reasoning with the `right` pointer is the same. 
 
-Implementing the solution in rust we obtain: 
-```rust
-fn max_water(heights: &[i32]) {
-	
-	let mut result = 0;
-	// initialize left and right pointers
-	let mut left = 0;
-	let mut right = heights.len() as i32 - 1;
-	
-	// maximum height "seen by" the left pointer so far
-	let mut left_max = 0;
-	// maximum height "seen by" the right pointer so far
-	let mut right_max = 0;
+The following pseudo-code solves the problem
+```java
+max_water(heights[]) 
+	n = heights.length()
+	result = 0
+	left = 0
+	right = n-1
 
-	while left < right {
-		// we shift the pointer that has the smaller height value:
-		// the smaller bar is what keeps the water at bay.
-		if heights[left as usize] < heights[right as usize] {
-			if heights[left as usize] > left_max {
-				left_max = heights[left as usize];
-			} else {
-				result += left_max - heights[left as usize];
-			}
-			// shift left
-			left += 1;
-		} else {
-			if heights[right as usize] > right_max {
-				right_max = heights[right as usize];
-			} else {
-				result += right_max - heights[right as usize];
-			}
-			right -= 1;
-		}
-	}
-	println!("{}", result);
-}
+	left_max = 0 // max height seen by "left" so far
+	right_max = 0 // max height seen by "right" so far
+
+	while left < right 
+		if heights[left] < heights[right] // shift "left"
+			if heights[left] > left_max 
+				left_max = heigths[left] // cant store water
+			else 
+				result += left_max - heights[left]
+			left += 1
+		else // shift right
+			if heights[right] > right_max 
+				right_max = heights[right] // cant store water
+			else 
+				result += right_max - heights[right]
+			right -= 1
+
+	return result
 ```
 # 3 - Find Peak Element
 ![[Screenshot from 2024-01-05 15-00-58.png | center | 700]]
@@ -158,117 +134,69 @@ Considering the binary search, we have:
 - **solve:** compare the middle element of the array with the searched key. If the middle element is a match, the search stop successfully. If not, we recursively search for the key only in one of the two halves that may contain the key, based on whether the desired key is greater or lesser than the middle element
 - **combine:** there is nothing to combine
 
-A generic implementation of binary search is the following: 
-```rust 
-fn binary_search<T: Ord>(arr: &[T], key: T) -> Option<usize> {
-    let mut low = 0;
-    let mut high = arr.len();
-
-    while low < high {
-	    // never use middle = (low + high)/2, as it can
-	    // lead to overflow if (low+high) > usize::MAX
-        let middle = low + (high - low)/2;
-
-        match key.cmp(&arr[middle]) {
-            std::cmp::Ordering::Equal   => return Some(middle),
-            std::cmp::Ordering::Less    => high = middle,
-            std::cmp::Ordering::Greater => low = middle + 1,
-        }
-    }
-    None
-}
-```
-
 It is also important to observe that when there are multiple occurrences of the searched key, the function returns the position of the first encountered occurrence, not necessarily the first occurrence in the vector.
-However, **it is often very useful to report the position of the first (or last) occurrence of the searched key**. We can obtain this behavior with the following implementation.
+However, **it is often very useful to report the position of the first (or last) occurrence of the searched key**. 
 
-```rust
-fn binary_search<T: Ord>(arr: &[T], key: T) -> Option<usize> {
-    let mut low = 0;
-    let mut high = arr.len(); // note that high is excluded
+We can obtain this behavior with the following pseudo-implementation.
+```java
+binary_search(a[], target) 
+	n = a.length()
+	low = 0
+	high = n - 1
+	answer = -1
 
-    let mut ans = None;
+	while low < high
+		// (low + high)/2 might overflow if (high+low) is very big
+		middle = low + (high - low) / 2
 
-    while low < high {
-        let middle = low + (high - low) / 2;
+		if a[middle] == target
+			answer = middle
+			high = middle
+		else if a[middle] < target
+			low = middle
+		else 
+			high = middle
 
-        match key.cmp(&arr[middle]) {
-            std::cmp::Ordering::Equal => {
-                ans = Some(middle);
-                high = middle
-            }
-            std::cmp::Ordering::Less => high = middle,
-            std::cmp::Ordering::Greater => low = middle + 1,
-        }
-    }
-    
-    ans
-}
+	return answer
 ```
 In this implementation, when a match is found, we do not immediately return its position. Instead, we update the `ans` variable and set `high` to the position of this occurrence. 
 This way, we continue the search in the first half of the array, seeking additional occurrences of the `key`. 
 If there are more matches, `ans` will be further updated with smaller positions.
+### 3.1.1 Applications of Binary Search
+#### 3.1.1.1 Binary Search the Answer
+Consider a problem where all the possible answer are restricted to a range of values between a certain `[low, right]` possible answers. 
+In other words, any candidate `x` falls within the range `[low, range]`.
+We also have a boolean predicate `pred` defined on the candidate answer that tells us if an answer is good or not for our aims. 
+The goal is to **find the largest good answer.**
+**theory_TODO**
+#### 3.1.1.2 Square Root
+**theory_TODO**
+#### 3.1.1.3 Social Distancing
+**theory_TODO**
 ## 3.2 - Solution
 **We can use the binary search philosophy to solve the problem.**
 We compare the middle element with its neighbors to determine if it is a peak. 
 If the middle element is not a peak and its left neighbor is greater, then the peak must be in the left half; otherwise, it must be in the right half. 
+```java
+peak_elements(a[])
+	n = a.length()
+	low = 0
+	high = n - 1
 
-```rust
-fn find_peak_element(nums: &[i32]) -> i32 { 
-	let mut left = 0; 
-	let mut right = nums.len() - 1; 
-	
-	while left < right { 
-		let mid = left + (right - left) / 2; 
-		if nums[mid] < nums[mid + 1] { 
-			left = mid + 1; 
-		} else { 
-			right = mid; 
-		} 
-	} 
-	left as i32
-}
+	while low < high
+		mid = low + (high - low) / 2
+
+		if a[mid] < a[mid + 1]
+			low = mid + 1
+		else 
+			right = mid 
+
+	return low 
 ```
-
-Mind that the definition about the out-of-bound elements 
-`nums[-1] = nums[nums.len()] = - infinite` is crucial to the solution.
-
-We can also have the recursive solution: 
-```java 
-	public int findPeakElement(int[] nums) {
-        return peek_bs(nums, 0, nums.length-1);
-    }
-
-    private int peek_bs(int[] nums, int start, int end){
-        if(start == end)
-            return start; 
-            
-        int middle = start + (end - start)/2; 
-        if(nums[middle] > nums[middle+1])
-            return peek_bs(nums, start, middle);
-        else
-            return peek_bs(nums, middle+1, end);
-    }
-```
+![[Pasted image 20240205105237.png | center | 500]]
 # 4 - Maximum Path Sum
-Given a binary tree in which each node element contains a number. Find the maximum possible path sum from one special node to another special node.
-**Note:** Here special node is a node which is connected to exactly one different node.
+Find the maximum possible sum from one leaf node to another.
 
-**Example:**
-**Input:**     
-```plaintext
-						            3                               
-						           / \                          
-						          4   5                     
-						         / \      
-						      -10   4  
-```
-**Output:** 16
-**Explanation:**
-Maximum Sum lies between special node 4 and 5.
-4 + 4 + 3 + 5 = 16.
-
-Differently said: **Find the maximum possible sum from one leaf node to another.**
 ![[Pasted image 20240108100401.png | center | 490]]
 
 **To solve this problem we need to use a tree traversal.**
@@ -277,10 +205,10 @@ Fist we go back and give the basics.
 **Tree traversal** (also known as tree search and walking the tree) **is a form of graph traversal and refers to the process of visiting** (e.g. retrieving, updating, or deleting) **each node in a tree data structure, exactly once.** 
 **Such traversals are classified by the order in which the nodes are visited.**
 
-Traversing a tree involves iterating over all nodes in some manner. 
+**Traversing a tree involves iterating over all nodes in some manner.** 
 Because from a given node there is more than one possible next node some nodes must be deferred, aka stored, in some way for later visiting. 
 This is often done via a stack (LIFO) or queue (FIFO). 
-As a tree is a self-referential (recursively defined) data structure, traversal can be defined by recursion.
+**As a tree is a recursively defined data structure, traversal can be defined by recursion.**
 In these cases the deferred nodes are stored implicitly in the call stack.
 
 Depth-first search is easily implemented via a stack, including recursively (via the call stack), while breadth-first search is easily implemented via a queue.
@@ -336,16 +264,15 @@ In a binary search tree ordered such that in each node the key is greater than a
 ![[Screenshot from 2024-01-08 09-29-11.png | center | 300]]
 
 ## 4.2 Trivial Solution, O(n^2)
-A simple solution is to traverse the tree and do following for every traversed node X: 
-
-1. Find maximum sum from leaf to root in left subtree of X  $\clubsuit$
-3. Find maximum sum from leaf to root in right subtree of X. 
-4. Add the above two calculated values and X->data and compare the sum with the maximum value obtained so far and update the maximum value. 
+A simple solution is to traverse the tree and do following for every traversed node $X$: 
+1. Find maximum sum from-leaf-to-root in left subtree of $X\ \clubsuit$
+3. Find maximum sum from-leaf-to-root in right subtree of $X$. 
+4. Add the above two calculated values and $X\rightarrow \text{data}$ and compare the sum with the maximum value obtained so far and update the maximum value. 
 5. Return the maximum value.
 
 ---
-$\clubsuit$  **Max Sum leaf to root path in a Binary Tree:**
-Given a Binary Tree, find the maximum sum path from a leaf to root.
+$\clubsuit \text{ }$**Max Sum leaf-to-root path in a Binary Tree:**
+**Given a Binary Tree, find the maximum sum path from a leaf to root.**
 For example, in the following tree, there are three leaf to root paths:
 - 8 -> -2 -> 10
 - -4 -> -2 -> 10
@@ -366,176 +293,116 @@ The maximum of them is 17 and the path for maximum is 7 -> 10.
 2) Once we have the target leaf node, we can print the maximum sum path by traversing the tree. 
 
 Here we provide a Java pseudo-implementation of the problem: 
-```java 
-	// wrapper used so that max_no can be updated among function calls
-	class Maximum {
-		int value = Integer.MIN_VALUE;
-	}
+```java
+maxValue = 0
+targetLeaf = null
 
-	Node targetLeaf = null;
+maxLeafRootSum(root)
+	targetLeaf = findTargetLeaf(root, 0)
+	print(maxValue)
 
-	// sets the targetLeaf to refer the leaf node of the maximum path sum.
-	// returns the maximum sum using maxSum
-	void getTargetLeaf(
-		Node node, 
-		Maximum maxSum,
-		int currentSum
-	){
-		if (node == null)
-			return;
+// set targetLeaf to the leaf with maximum sum path to root
+findTargetLeaf(node, currMaxValue) 
+	if root == null
+		return 
 
-		// update current sum to hold sum of nodes 
-		// on path from root to this node
-		currentSum = currentSum + node.data;
+	// hold the sum of nodes on path from root to this node
+	currMaxValue += node.value
 
-		// if this is a leaf node and path to this node
-		// has maximum sum so far, then make this node
-		// targetLeaf
-		if (node.left == null && node.right == null) {
-			if (currentSum > maxSum.value) {
-				maxSum.value = currentSum;
-				targetLeaf = node;
-			}
-		}
+	// leaf and the path to this has maximum sum: set targetLeaf
+	if node.isLeaf 
+		if currMaxValue > maxValue
+			maxValue = currMaxValue
+			targetLeaf = node
 
-		// If this is not a leaf node recur down to find targetLeaf
-		getTargetLeaf(node.left, maxSum, currentSum);
-		getTargetLeaf(node.right, maxSum, currentSum);
-	}
-	
-	// returns the maximum sum and prints the nodes on max sum path
-	int maxSumPath(Maximum maxSum) {
-		// base case
-		if (root == null)
-			return 0;
-
-		// find the target leaf and maximum sum
-		getTargetLeaf(root, maxSum, 0);
-
-		// print the path from root to the target leaf
-		printPath(root, targetLeaf);
-		return maxSum.value; // return maximum sum
-	}
-
-	boolean printPath(Node node, Node targetLeaf) {
-		// base case
-		if (node == null)
-			return false;
-
-		// return true if this node is the target leaf or
-		// target leaf is present in one of its descendants
-		if (
-			node == targetLeaf || 
-			printPath(node.left, targetLeaf) || 
-			printPath(node.right, targetLeaf)
-		){
-			System.out.print(node.data + " ");
-			return true;
-		}
-
-		return false;
-	}
+	// this is not a leaf node: recur down to find targetLeaf
+	findTargetLeaf(node.left, currMaxValue)
+	findTargetLeaf(node.right, currMaxValue)
 ```
 ---
+So, the trivial solution of **Maximum Path Sum** works as follows: 
+- For every node $X$ we compute: 
+	- the maximum path sum from $X.\text{left}$ to a leaf, $O(n)$
+	- the maximum path sum from $X.\text{right}$ to a leaf, $O(n)$
+	- we take the maximum between the two 
+	- we sum the value of X
+	- if the sum is greater than the current maximum we update the current maximum
 
-So, how the trivial solution works is clear. 
-For every node X we compute: 
-- the maximum path sum from X.left to a leaf, O(n)
-- the maximum path sum from X.right to a leaf, O(n)
-- we take the maximum between the two 
-- we sum the value of X
-- if the sum is greater than the current maximum we update the current maximum
-
-For every node we call twice `maxSumPath`, which costs O(n), hence the total cost is O(n^2)
+For every node we call twice `maxLeafRootSum`, which costs O(n), hence the total cost is O(n^2)
 ## 4.3 - Optimal Solution, O(n)
 **We can find the maximum sum using single traversal of binary tree**. 
 The idea is to maintain two values in recursive calls
-1. Maximum root to leaf path sum for the subtree rooted under current node. 
+1. Maximum root-to-leaf path sum for the subtrees rooted under current node. 
 2. The maximum path sum between leaves (desired output).
 
-For every visited node X, we find the maximum root to leaf sum in left and right subtrees of X. We add the two values with X->data, and compare the sum with maximum path sum found so far.
+For every visited node $X$, we find the maximum root-to-leaf sum in left and right subtrees of $X$. We add the two values with $X->\text{data}$, and compare the sum with maximum path sum found so far.
 
-As before, here a pseudo-implementation using Java 
-
+As before, here a pseudo-code implementation:
 ```java
-// Maximum is passed around so that the
-// same value can be used by multiple recursive calls.
-class Maximum {
-	int value = Integer.MIN_VALUE;
-}
-
-public int maxPathSum(TreeNode root) {
-	Maximum max = new Maximum();
-	findMaxPathSum(root, max);	
-	return max.value;
-}
+maxValue = 0
 
 // calculates two things:
-// 1) maximum path sum between two leaves, which is stored in max.
-// 2) maximum root to leaf path sum, which is returned.
-private int findMaxPathSum(TreeNode node, Maximum max) {
-	if (node == null) 
-		return 0;
+// 1) maximum path sum between two leaves, which is stored in maxValue.
+// 2) maximum root-to-leaf path sum, which is returned.
+maxPathSum(root)
+	if root == null
+		return 0
 
-	// find maximum root-to-leaf-sum in left and right subtrees
-	int left = Math.max(0, findMaxPathSum(node.left, max));
-	int right = Math.max(0, findMaxPathSum(node.right, max));
-	// update the max sum path from leaf to leaf
-	max.value = Math.max(max.value, left + right + node.val);
+	left = maxPathSum(root.left)
+	right = maxPathSum(root.right)
 	
-	return Math.max(left, right) + node.val;
-}
+	maxValue = Math.max(maxValue, left + right + root.value)
+
+	return left + right + root.value
 ```
 
 In "one pass" (aka one traversal) we do what we did in the trivial solution.
 The reasoning is the following: 
-- take a node X
-- compute the max sum path from X.left to a leaf k and the max sum path from X.right to a leaf j. 
-- the sum path from k to j (passing by X) is greater than the one previously stored? then we update the max
+- take a node $X$
+- compute the max sum path from $X.\text{left}$ to a leaf $k$ and the max sum path from $X.\text{right}$ to a leaf $j$. 
+- the sum path from $k$ to $j$ (passing by $X$) is greater than the one previously stored? then we update the max
+
+The result is `maxValue` when the program terminates.
 # 5 - Two Sum in a Sorted Array
-Given a sorted array A (sorted in ascending order), having N integers, find if there exists any pair of elements (A[i], A[j]) such that their sum is equal to X.
+**This Problem is not mandatory: used to present the Two Pointers Trick.**
+Given a sorted array $a$ (sorted in ascending order), having $n$ integers, find if there exists any pair of elements ($a[i]$, $a[j]$) such that their sum is equal to $x$.
 ## 5.1 - Naive Solution, O(n^2)
 The naive approach is obvious and takes O(n^2), we simply scan the array and we return when we find two numbers that adds up to X. 
 ```java
-boolean isPairSum(int[] A, int X){
-	for(int i = 0; i < A.length; i++){
-		for(int j = i+1; j < A.length; j++){
-			if(A[i] + A[j] == X)
-				return true;
-			if(A[i] + A[j] > X)
-				break; // need a new A[i]
-		}
-	}
-	return false;
-} 
+existsPairSum(a[], x)
+	n = a.length()
+	for i = 0 to n
+		for j = i+1 to n
+			if a[i] + a[j] == x
+				return true
+			if a[i] + a[j] > x
+				break // a is sorted, need a new "i"
+	return false
 ```
 ## 5.2 - Two Pointers Trick
 Two pointers is really an easy and effective technique that is typically used for searching pairs in a sorted array.
 It employs using two pointer, typically one from the start of the array going left-to-right and one from the end of the array going right-to-left, until they meet. 
+We already seen a sneak peak of this in Trapping Rain Water. 
 ## 5.3 - Two Pointers Solution, O(n)
 **We take two pointers, one representing the first element and other representing the last element of the array, and then we add the values kept at both the pointers.** 
 
 If their sum is smaller than X then we shift the left pointer to right or if their sum is greater than X then we shift the right pointer to left, in order to get closer to the sum. 
 We keep moving the pointers until we get the sum as X.
-
 ```java
-public boolean isPairSum(int A[], int X){
-	int left = 0;
-	int rigth = N - 1;
+existsPairSum(a[], x)
+	n = a.length()
+	left = 0
+	right = n-1
 
-	while (left < right) {
-		// found the pair sum
-		if (A[left] + A[rigth] == X)
-			return true;
-		// smaller than the target, we increase the first
-		if (A[left] + A[rigth] < X)
-			left++;
-		// bigger than the target, we decrease the second
+	while left < right
+		if a[left] + a[right] == x
+			return true
+		if a[left] + a[right] < x
+			left += 1 // smaller than target, we need to increase
 		else
-			rigth--;
-	}
-	return false;
-}
+			right -= 1 // bigger than target, we need to decrease
+
+	return false
 ```
 # 6 - Frogs and Mosquitoes
 There are $n$ frogs sitting on the coordinate axis $Ox$. 
