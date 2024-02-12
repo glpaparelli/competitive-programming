@@ -1,4 +1,6 @@
 # competitive-programming
 - exercises: implementations of the mandatory exercises
 - hands-on: implementations of the three hands-on
-- cp-notes.html: summary of the theory, problems explained, etc. (here)
+- [cp-notes](https://htmlpreview.github.io/?https://github.com/glpaparelli/competitive-programming/blob/main/cp-notes.html): summary of the theory, problems explained, etc. 
+
+
