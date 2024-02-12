@@ -5,12 +5,12 @@ use std::collections::HashMap;
 fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
     // create the prefix sum array
 	let prefix_sums = nums
-    .iter()
-    .scan(0, |sum, e| {
-    *sum += e;
-    Some(*sum)
-})
-.collect::<Vec<_>>();
+		.iter()
+		.scan(0, |sum, e| {
+		*sum += e;
+		Some(*sum)
+	})
+	.collect::<Vec<_>>();
 
 let mut mods_to_indices: HashMap<i32, usize> = HashMap::new();
     for (i, &prefix_sum) in prefix_sums.iter().enumerate() {

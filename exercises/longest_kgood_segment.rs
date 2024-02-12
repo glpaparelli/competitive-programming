@@ -71,7 +71,7 @@ fn longest_kgood_segment(array: &Vec<i32>, k: i32) -> Option<(usize, usize)> {
             left = pointer;
             // the window is made of one element
             right = left;
-            w_size = 0;
+            w_size = 1;
             // points to the element right next to the window
             pointer += 1;
 
