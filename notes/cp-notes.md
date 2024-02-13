@@ -1729,7 +1729,12 @@ smartLIS(nums)
 	return ans.length()
 ```
 
-**theory_TODO**
+**Said easy:**
+- the length of `ans` is the length of the current LIS. 
+- when we substitute, we insert `nums[i]` in position `low` of `ans`. 
+- the position `low` is the index of the smallest element grater than `nums[i]` in `ans`. 
+	- this is obvious: we can substitute `ans[low]` with a smaller element without affecting the longest increasing subsequence, that remains valid. 
+- substituting `ans[low]` with `nums[i]` let us "consider" a new LIS, starting from `nums[i]`, this is because when we substitute we insert in a place that is still part of the current LIS, but if a new LIS would start entirely from the current element every element would be substituted **starting from that element**
 # 18 - Longest Bitonic Sequence
 Given an array `arr[0 … n-1]` containing $n$ positive integers, a subsequence of `arr[]` is called **bitonic** if it is first increasing, then decreasing. 
 Write a function that takes an array as argument and returns the length of the longest bitonic subsequence. 
