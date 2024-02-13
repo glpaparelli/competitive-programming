@@ -1156,19 +1156,68 @@ It is easy to see that the update request can be implemented using a recursive f
 ![[Pasted image 20240112112424.png | center | 450]]
 ### 12.2.2 Range Update and Lazy Propagation
 Segment Trees allows applying modification queries to an entire segment of contiguous elements and perform the query in the same time $O(\log(n))$. 
-
 When we need to update an interval we will update a node and mark its child that it needs to be updated and update it only when needed. 
 To every node we add a field that marks if the current node has a pending update or not. 
+Then, when we perform another range update or a sum query, if nodes with a pending update are involved, we first perform the updates and then solve the query. 
 
-**theory_TODO**
+**Alternatively said, consider the following segment tree:**
+
+
+![[Pasted image 20240212165129.png | center | 500]]
+**When there are many updates and updates are done on a range, we can postpone some updates (avoid recursive calls in update) and do those updates only when required.**  
+
+Please remember that a node in segment tree stores or represents result of a query for a range of indexes. 
+And if this node’s range lies within the update operation range, **then all descendants of the node must also be updated.** 
+
+**Example:** consider the node with value $27$ in above diagram, this node stores sum of values at indexes from $3$ to $5$. 
+If our update query is for range $2$ to $5$, then we need to update this node and all descendants of this node. 
+With Lazy propagation, we update only node with value $27$ and postpone updates to its children by storing this update information in separate nodes called lazy nodes or values. We create an array `lazy[]` which represents lazy node. 
+The size of `lazy[]` is same as array that represents segment tree.
+The idea is to initialize all elements of `lazy[]` as 0. A value 0 in `lazy[i]` indicates that there are no pending updates on node `i` in segment tree. 
+A non-zero value of `lazy[i]` means that this amount needs to be added to node `i` in segment tree before making any query to the node.
 ## 12.3 - Segment Trees Solution
-**Let's now solve nested segments with a Segment Tree**
-**theory_TODO**
+**Let's now solve nested segments with a Segment Tree and Sweep Line**
+
+Given the input array `segments` we compute the maximum endpoint between the segments, and call it `n`. 
+Then we create a segment tree, based on an array of length $n$, initialized with all zeroes. 
+At this point we create the array `axis`, which stores triples where: 
+- the first element of the triple is a segment endpoint
+- the second element is the index of the endpoint's segment in `segments`
+- the third element is a boolean `isStart`, which is set to `true` if the endpoint is the start of its segment, otherwise the end. 
+
+We sort `axis` by the first element, the segments endpoints. 
+Finally we "sweep" over axis. 
+
+- `for` `i = 0 to axis.length()
+	- if `axis[i].isStart == false`, aka if the current endpoint is the end of its segment
+		- the number of nested segments in the segment where `axis[i].endpoint`, that we call `res`, is the range sum on the range `[segments[axis[i].index, axis[i].endpoint` 
+		- we push the tuple `(axis[i].index, res)` in the array of results
+		- we increase by one the start of the segment indexed with `axis[i].index` in `segments`
+	- sort `results` by the indexes and return it
+
+**Why it works?**
+![[Pasted image 20240212162551.png | center | 600]]
+![[IMG_0416.png | center | 600]]
+**In words:**
+Consider the segments $[(s_0, e_0), \dots, (s_{n-1}, e_{n-1})]$.
+
+When we find the end of a segment $i$, namely $e_i$ we do the range sum of $(s_i, e_i)$ to get the number of segments contained in the segment $(s_i, e_i)$. 
+Then we increase by $1$ the segment $(s_i, s_i)$ in the segment tree. 
+
+This works because we increase by one the start $s_i$ when its segment $i$ has been closed. 
+The range sum on $(s_i, e_i)$ will count only segments that starts after $s_i$ and have already been closed (otherwise they would be $0$ in the tree).
+
+**Alternatively said:**
+- find the end of the segment $i$, $e_i$. 
+- do the range sum $(s_i, e_i)$
+	- all the segments $(s_j, e_j)$ that starts after $s_i$ and have already been closed have caused the increment by one of $s_j$
+		- starts after $i$ and already been closed, fully contained in $i$
+- the segment $i$ has been closed, increase by one $(s_i, s_i)$ in the tree.
 # 13 - Powerful Array
 An array of positive integers $a_1,\dots,a_n$ is given. 
 Let us consider its arbitrary subarray $a_l, a_{l+1},\dots, a_r$, where $1 \le l \le r \le n$.
 For every positive integer $s$ we denote with $K_s$ the number of occurrences of $s$ into the subarray.
-We call the **power** of the subarray the sum of products $K_s \cdot K_s \cdot s$ for every positive integer $s$. 
+We call the **power** of the subarray the sum of products $K_s \cdot K_s \cdot s$ for every positive integer $s$
 The sum contains only finite number of nonzero summands as the number of different values in the array is indeed finite. 
 
 You should calculate the power of $t$ given subarrays.
@@ -1611,7 +1660,8 @@ partialEqualSubsetSum(array)
 The **then branch** of the `if` is crucial: if `arr[i - 1]` is greater than `j`, it means that including the current element `i` in the subset would make the sum exceed the current target sum `j`.
 Therefore, the solution at `dp[i][j]` would be the same as the solution without including the current element, i.e., `sol[i - 1][j]` (aka, we do not include `i`, as we can't)
 # 17 - Longest Increasing Subsequence
-Given an array of integers, find the **length** of the **longest (strictly) increasing subsequence** from the given array.
+Given an array of integers, find the **length** of the **longest (strictly) increasing subsequence**
+from the given array.
 **observation:** subsequence, as before, it is not a contiguous. 
 
 As an example consider the sequence $S=\{10,22,9,21,33,50,41,60,80\}$.
@@ -1652,13 +1702,34 @@ longestIncreasingSubsequence(array)
 	return lis.max()
 ```
 ## 17.2 - Smarter Solution: Speeding up LIS
-**theory_TODO**
-The main idea of the approach is to simulate the process of finding a subsequence by maintaining a list of “buckets” where each bucket represents a valid subsequence. Initially, we start with an empty list and iterate through the input `nums` vector from left to right.
+The main idea of the approach is to simulate the process of finding a subsequence by maintaining a list of “buckets” where each bucket represents a valid subsequence. 
+Initially, we start with an empty list and iterate through the input `nums` vector from left to right.
 
 For each number in `nums`
 - If the number is greater than the last element of the last bucket (i.e., the largest element in the current subsequence), we append the number to the end of the list. This indicates that we have found a longer subsequence.
 - Otherwise, we perform a binary search on the list of buckets to find the smallest element that is greater than or equal to the current number. This step helps us maintain the property of increasing elements in the buckets.
 - Once we find the position to update, we replace that element with the current number. This keeps the buckets sorted and ensures that we have the potential for a longer subsequence in the future.
+
+Consider the following pseudo-implementation
+```java
+smartLIS(nums) 
+	n = nums.length()
+	List ans
+
+	ans.add(nums[0])
+
+	for i = 1 to n
+		if nums[i] > ans.last()
+			ans.add(nums[i])
+		else
+			// low is the index of the smallest element >= nums[i] in `ans`
+			low = binarySearch(ans, nums[i])
+			ans.set(low, nums[i]);
+		
+	return ans.length()
+```
+
+**theory_TODO**
 # 18 - Longest Bitonic Sequence
 Given an array `arr[0 … n-1]` containing $n$ positive integers, a subsequence of `arr[]` is called **bitonic** if it is first increasing, then decreasing. 
 Write a function that takes an array as argument and returns the length of the longest bitonic subsequence. 
@@ -1772,7 +1843,6 @@ Of course Wilbur wants to achieve this goal in the minimum number of steps and a
 		- `i = 0: +1` $\rightarrow$ `a = [1,1,1,1,1]`
 		- `i = 1: +1` $\rightarrow$ `a = [1,2,2,2,2]`
 		- ...
-
 ## 20.1 - Solution
 The solution is based upon the observation that the minimum number of operations is equal to the sum of differences (in absolute value) between consecutive elements. 
 Given the array $v[1\dots n]$ we have that
