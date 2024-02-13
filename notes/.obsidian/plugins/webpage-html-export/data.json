@@ -5,7 +5,7 @@
   "includePluginCSS": "",
   "includeSvelteCSS": true,
   "makeNamesWebStyle": false,
-  "allowFoldingHeadings": false,
+  "allowFoldingHeadings": true,
   "sidebarsAlwaysCollapsible": false,
   "addFilenameTitle": true,
   "minifyHTML": true,
@@ -29,7 +29,7 @@
   "graphEdgePruning": 100,
   "graphMinNodeSize": 3,
   "graphMaxNodeSize": 7,
-  "exportPath": "/home/relli/Desktop",
+  "exportPath": "/home/relli/Desktop/competitive-programming",
   "filesToExport": [
     [
       "imgs/IMG_0394.png",
