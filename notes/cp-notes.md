@@ -50,9 +50,10 @@ Take the smaller of two heights.
 The difference between the smaller height and the height of the current element is the amount of water that can be stored in this array element.
 ## 2.2 - Smart Solution: Precomputation, O(n)
 **The point is to think locally, not globally.**
-**We can compute the left and right leaders.** 
+**We compute the left and right leaders.** 
 
-An element of array is a **right leader** if it is greater than or equal to all the elements to its right side. The rightmost element is always a leader.
+An element of an array is a **right leader** if it is greater than or equal to all the elements to its right side. The rightmost element is always a leader.
+**Left leaders are analogous.**
 
 Given the array $h$ of heights, we use two arrays to store the right and left leaders:
 $$
@@ -66,20 +67,21 @@ The minimum height between the left and right leader of the current position min
 $$w(i) = \min(\text{LL[$i$]}, \text{RL[$i$]}) - h[i]$$
 ![[Pasted image 20240105111518.png | center | 500]]
 ## 2.3 - Optimal Solution: Two Pointers, O(N)
+**Two Pointer Technique, more on this later.**
 The idea is taken from the Precomputation solution, where we only use two variables to store the currently "meaningful" leaders. 
 
 We take two pointers, `left` and `right` and we initialize `left` to `0` and `right` to the last index `n-1`. 
 We also create two variables, `left_max` and `right_max`, they represent the maximum left/right height seen so far. 
 
 Since `left` is the first `left_max` is `0`, same for `right_max`. 
-This is intuitive: we can't store water in the first and last column. 
+This is intuitive: `left_max` of `left = 0` falls outside the array, its height is 0, the same goes for `right_max` when `right = n-1`.
 
-Now we iterate, as long `left < right`. 
+Now we iterate, as long as `left < right`. 
 We have to decide which pointer we have to shift: **we shift the pointer that has smaller height value:** 
 - if `heights[left] < heights[right]` we shift `left`
 - we shift `right` otherwise
 
-Now, if we have that `heights[left] > left_max` we can't store any water over the position pointed by `left`, **it would fall as left_max is not high enough**. 
+Now, if we have that `heights[left] > left_max` we can't store any water over the position pointed by `left`, **it would fall as left_max is not high enough** to contain any water over `left`
 ![[Pasted image 20240105122707.png | center | 600]]
 Otherwise we compute the amount of water stored in `left`, as always with `left_max - heights[left]`. Then we finally shift `left` by `1`.
 The reasoning with the `right` pointer is the same. 
@@ -248,7 +250,7 @@ Otherwise we do the opposite.
 peak_elements(a[])
 	n = a.length()
 	low = 0
-	right = n - 1
+	high = n - 1
 
 	while low < high
 		mid = low + (high - low) / 2
@@ -256,7 +258,7 @@ peak_elements(a[])
 		if a[mid] < a[mid + 1]
 			low = mid + 1
 		else 
-			right = mid 
+			high = mid 
 
 	return low 
 ```
@@ -417,7 +419,7 @@ maxValue = 0
 
 // calculates two things:
 // 1) maximum path sum between two leaves, which is stored in maxValue.
-// 2) maximum root-to-leaf path sum, which is returned.
+// 2) root-to-leaf path sum, which is returned.
 maxPathSum(root)
 	if root == null
 		return 0
@@ -526,10 +528,10 @@ We store the position of the frogs in a BST, `frogBST`.
 When a mosquito lands on a position $b$ we check which frog will eat it by simply doing a `frogBST.predecessor(b)` query on the tree. 
 It is possible that some mosquito cannot be eaten right away, the uneaten mosquito will be stored in their own BST (`mosquitoBST`), using their landing position as keys. 
 
-**There is no need to sort anything.**
+**Sort the frogs by their position** and force no overlaps with their reach (position + tongue length).
 
 The algorithm behaves as follows: 
-- insert the frogs, by their order, in a BST `frogBST` using their position as key
+- insert the frogs in a BST `frogBST` using their position as key
 - for each mosquito `m` in `mosquitoes`
 	- find the predecessor `f` of `m`  in `frogBST`, **if** `f.position + f.tongue >= m.position`
 		- `f` eats the mosquito `m` and its tongue grows by the size of `m`
@@ -605,8 +607,7 @@ isCovered(ranges, left, right)
 	for range in ranges 
 		openRangesAt.insert(openRangesAt.getOrDefault(range.start, 0) + 1)
 		// range.end+1 as the ranges are inclusive!
-		openRangesAt.insert(openRangesAt.getOrDefault(range.end+1, 0) + 1)
-	
+		openRangesAt.insert(openRangesAt.getOrDefault(range.end+1, 0) - 1)
 
 	openRangesNow = 0
 	for i = 0 to left 
@@ -614,17 +615,17 @@ isCovered(ranges, left, right)
 
 	for point=left to right 
 		openRangesNow += openRangesNow.getOrDefault(point, 0)
-		if openRangesNow == false
+		if openRangesNow == 0
 			return false
 
 	return true
 ```
 # 9 - Longest k-Good Segment
 The array $a$ with $n$ integers is given. 
-Let's call the sequence of one or more consecutive elements in $a$ a segment. 
+Let's call the sequence of one or more **consecutive** elements in $a$ a segment. 
 Also let's call the segment $k$-good if it contains no more than _k_ different values.
 
-**Note:** if the distance between two numbers is `abs(1)` then the two numbers are consecutive.
+**Note:** if the distance between two numbers is `abs(1)` then the two numbers are **consecutive**.
 
 Find any longest k-good segment.
 **Note:** we return the indexes of the longest k-good segment
@@ -725,7 +726,7 @@ checkSubarraySum(array, k)
 
 	// map: modulo -> index i st prefixSumArray[i] % k = modulo
 	HashMap modsToIndices
-	for (i, prefixSum) in array.enumerate() 
+	for (i, prefixSum) in prefixSumArray.enumerate() 
 		modulo = prefixSum % k
 
 		if modulo == 0 && i != 0 // if modulo is 0 and not the first ok
@@ -863,10 +864,11 @@ To support this we add a new level to our tree, so we can support positions that
 - 9 + 4 + 5 = 15, which is `sum(7)`
 
 And we are done, this is the Fenwick tree of the array `A`. 
-We can make some observations: 
-1) While we have represented our solution as a tree, it cal also be represented as an array of size n+1, as shown in the figure above
+
+**We can make some observations:** 
+1) While we have represented our solution as a tree, it can also be represented as an array of size n+1, as shown in the figure above
 2) We no longer require the original array `A` because any of its entries `A[i]` can be simply obtained by doing `sum(i) - sum(i-1)`. This is why the Fenwick tree is an **implicit data structure**
-3) Let be $h = \lfloor\log(n)+1\rfloor$, which is the length of the binary representation of any position in the range $[1,n]$. Since any position can be expressed as the sum of at most $h$ powers of $2$, the tree has no more than $h$ levels. In fact, the number of levels is either $h$ or $h-1$, depending on the value of $n$ (**theory_TODO, not clear**)
+3) Let be $h = \lfloor\log(n)+1\rfloor$, which is the length of the binary representation of any position in the range $[1,n]$. Since any position can be expressed as the sum of at most $h$ powers of $2$, the tree has no more than $h$ levels. In fact, the number of levels is either $h$ or $h-1$, depending on the value of $n$ 
 
 Now, let’s delve into the details of how to solve our `sum` and `add` queries on a Fenwick tree.
 ### 11.1.1 - Answering a `sum` query
@@ -874,7 +876,7 @@ This query involves beginning at a node `i` and traversing up the tree to reach 
 Thus `sum(i)` takes time proportional to the height of the tree, resulting in a time complexity of $\Theta(\log n)$. 
 
 Let's consider the case `sum(7)` more carefully. 
-We start at node 7 and move to its parent (node 6), its grandparent (node 4), and stop at its great-grandparent (the dummy root 0), summing their values along the way. 
+We start at node with index 7 and move to its parent (node with index 6), its grandparent (node with index 4), and stop at its great-grandparent (the dummy root 0), summing their values along the way. 
 This works because the ranges of these nodes ($[1,4], [5,6], [7,7]$) collectively cover the queried range $[1,7]$. 
 
 Answering a `sum` query is straightforward **if we are allowed to store the tree's structure.**
@@ -981,11 +983,11 @@ impl FenwickTree {
 ## 11.2 - Fenwick Tree Solution
 We are given an array `A[1,n]` initially set to 0. 
 We want to support two operations: 
-- `access(i)` returns `A[i]`
+- `access(i)` returns the sum `A[1..i]`
 - `range_update(l, r, v)`, updates the entries in `A[l,r]` adding to them `v`
 
-The following Fenwick solution solve the problem on an array `B[1,n]`. 
-1) from `B` we build the Fenwick Tree of length `n` (mind that `B` is initialized with all zeros)
+The following Fenwick solution solve the problem
+1) from `A` we build the Fenwick Tree of length `n` (mind that `A` is initialized with all zeros)
 2) the operation `access(i)` is a wrapper of the operation `sum(i)` we have seen before
 3) the operation `range_update(l,r,v)` exploit the operation `add(i, v)` of the implementation of the Fenwick Tree: 
 	1) first we check that `l` is `<=` than `r`, aka that the interval of entries to update is well formed
@@ -1034,8 +1036,8 @@ We provide two solutions to this problem:
 ## 12.1 - Fenwick Tree Solution
 We use a sweep line & Fenwick tree approach. 
 
-For starters we map the segments to the range $[1,2n]$ and sort them by their starting point. 
-Then we build the Fenwick tree, we scan each segment $[l_i, r_i]$ and add $1$ in each position $r_i$
+We build an array `events` where every entry is `[l_i, r_i, i]`, and then we sort `events` by start of the range `l_i`
+Then we build the Fenwick tree with size $2n+1$ and we scan each segment $[l_i, r_i]$ and add $1$ in each position $r_i$ in the fenwick tree. 
 
 Now we scan the segments again. 
 When we process the segment $[l_i, r_i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
