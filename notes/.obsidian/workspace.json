@@ -31,7 +31,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -81,7 +82,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "9d9ae04ade4b7d03",
@@ -97,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "cp-notes.md",
+                "file": "cp-tldr.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +116,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cp-notes.md",
+                "file": "cp-tldr.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +139,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cp-notes.md"
+                "file": "cp-tldr.md"
               }
             }
           }
@@ -159,10 +161,10 @@
       "webpage-html-export:Export Vault to HTML": false
     }
   },
-  "active": "92110bd74c7ae074",
+  "active": "261b0e0a0627bf3d",
   "lastOpenFiles": [
-    "cp-tldr.md",
     "cp-notes.md",
+    "cp-tldr.md",
     "imgs/Pasted image 20240212162551.png",
     "imgs/IMG_0416.png",
     "imgs/Pasted image 20240212165129.png",

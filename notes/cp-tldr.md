@@ -3,11 +3,12 @@
 - **dumb solution:** 
 	- two nested loops, the outer one from `i = 0 to n` and the inner one from `j = i to n`.
 	- at every iteration of the outer loop we set `sum = 0`. 
-	- then for every iteration of `j` we add to sum `a[j]`. If `sum` is greater than `max` we update `max`
+	- then for every iteration of `j` we do `sum += a[j]`. If `sum` is greater than `max` we update `max`
 - **kadane's algorithm:**
 	- based on two properties: 
 		- the sum of any prefix of the optimal subarray is positive 
 		- the value that precedes the optimal subarray is negative
+	- set `sum = 0`
 	- iterate from start to finish
 		- if `sum < 0` then `sum = nums[i]`, this let us "restart" the subarray in consideration
 		- otherwise `sum += nums[i]` and if `sum > max` we update max
@@ -180,8 +181,8 @@ The Fenwick Tree is an **implicit data structure**, which means it only requires
 
 **In every node we store:** 
 - the index of that number in the array
-- the prefix up to that element in the array
-- the range of the array that the current node it covers
+- the prefix sum up to that element in the array
+- the range of the array that the current node covers `[i..j]`
 
 **How the tree is built**
 - in the first level we have nodes that covers ranges that ends with an index that is a power of $2$
@@ -193,10 +194,10 @@ The Fenwick Tree is an **implicit data structure**, which means it only requires
 
 **Observations:**
 - besides the tree representation we can represent the data structure as an array, as shown in the image above
-- we **no longer require the original array**, any of its entry `i` can be obtained simply by doing `sum(i) - sum(i-1)`. this is why Fenwick trees are an **implicit data structure**
-- consider $h = \lfloor\log(n) + 1\rfloor$, which is the length of the binary representation of any of the positions in the range $[1,n]$ (the positions of the array). Since any position can be expressed as the sum of at most $h$ power of $2$ the tree has at most $h$ levels
+- we **no longer require the original array**, any of its entry `i` can be obtained simply by doing `sum(i) - sum(i-1)`. this is why the fenwick tree is an **implicit data structure**
+- consider $h = \lfloor\log(n) + 1\rfloor$, ($+1$ due to the 1-indexing) which is the length of the binary representation of any of the positions in the range $[1,n]$ (the positions of the array). Since any position can be expressed as the sum of at most $h$ power of $2$ the tree has at most $h$ levels
 ## Computing the sum(i) query
-This query involves beginning at a node `i` and traversing up the tree to reach the node `0`
+This query involves beginning at a node `i` and traversing up the tree to reach the node `0` (the dummy root).
 Thus `sum(i)` takes time proportional to the height of the tree, resulting in a time complexity of $\Theta(\log n)$. 
 
 Let's consider the case `sum(7)`. 
@@ -253,7 +254,7 @@ We want to support two operations:
 	- `add(r, -v)`:  this trigger the subtraction of the value `v` to each node whose range include the position `r` in the Fenwick Tree
 	- we have added and subtracted the same same quantity `v` in the Fenwick tree, this means that prefix sum are coherent and the elements in `[l,r]` are increased by `v` 
 # Segment Tree
-A Segment Tree is a data structure that stores information about array intervals as a tree. 
+**A Segment Tree is a data structure that stores information about array intervals as a tree.** 
 This allows answering **range queries** over an array efficiently, while still being flexible enough to **allow quick modification of the array**.
 The key point here is **range queries**, not only range sums!
 
@@ -317,12 +318,332 @@ The task is to determine and report the number of other segments each segment co
 
 We build an array `events` where every entry is `[l_i, r_i, i]`, and then we sort `events` by start of the respective range, `l_i`.
 
-We then we build the Fenwick tree with size $2n+1$ and we scan each segment $[l_i, r_i]$ and add $1$ in each position $r_i$ in the fenwick tree. 
+Then we build the Fenwick tree with size $2n+1$, we scan each event $[l_i, r_i, i]$ and add $1$ in each position $r_i$ in the fenwick tree. 
 
-Now we scan the segments again. 
-When we process the segment $[l_i, r_i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
-Now to find the solution of this problem for the current segment (aka the number of segments contained in the current one) we need to know the number of these segments (the ones that starts before the current one) that also end before the current one, before $r_i$. 
-This is computed with a query `sum(r_i)` on the Fenwick Tree.
-After computing the solution for the current segment we subtract $1$ to position $r_i$, to remove the contribution of the right endpoint of the current segment. 
+Now we scan the events again. 
+When we process the event $[l_i, r_i, i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
 
+To find the solution of this problem for the current segment (aka the number of segments contained in the current one) we need to know the number of the segments that starts after the current one that also end before the current one, before $r_i$. 
+This is computed with a query `sum(r_i)` on the Fenwick Tree. 
+
+After computing the solution for the current segment we subtract $1$ to position $r_i$, to remove the contribution of the right endpoint of the current segment in the next queries.
+This is why the segments that starts before the current one but overlaps with it are not counted
 ## Segment Tree Solution
+**Let's now solve nested segments with a Segment Tree and Sweep Line**
+
+**In words:**
+Consider the list of segments `segments:` $[(s_0, e_0), \dots, (s_{n-1}, e_{n-1})]$.
+
+Create an array `axis` where each entry is `[endpoint_i, i, isStart]`, where: 
+- `endpoint_i` is either $s_i$ or $e_i$
+- `i` is the index of the segment of the endpoint in `segments`
+- `isStart` is true if `endpoint_i` is a $s_i$, false otherwise
+
+Sort `axis` by the first element, the segments endpoints. 
+
+Now we iterate over `axis`: when we find the end of a segment $i$, namely $e_i$ we do the range sum of $(s_i, e_i)$ to get the number of segments contained in the segment $(s_i, e_i)$. 
+Then we increase by $1$ the segment $(s_i, s_i)$ in the segment tree. 
+This works because we increase by one the start $s_i$ when its segment $i$ has been closed. 
+The range sum on $(s_i, e_i)$ will count only segments that starts after $s_i$ and have already been closed (otherwise they would be $0$ in the tree).
+
+**Alternatively said:**
+- find the end of the segment $i$, $e_i$. 
+- do the range sum $(s_i, e_i)$
+	- all the segments $(s_j, e_j)$ that starts after $s_i$ and have already been closed have caused the increment by one of $s_j$
+		- starts after $i$ and already been closed, fully contained in $i$
+- the segment $i$ has been closed, increase by one $(s_i, s_i)$ in the tree.
+# Powerful Array
+An array of positive integers $a_1,\dots,a_n$ is given. 
+Let us consider its arbitrary subarray $a_l, a_{l+1},\dots, a_r$, where $1 \le l \le r \le n$.
+For every positive integer $s$ we denote with $K_s$ the number of occurrences of $s$ into the subarray.
+We call the **power** of the subarray the **sum** of products $K_s \cdot K_s \cdot s$ for every positive integer $s$
+The sum contains only finite number of nonzero summands as the number of different values in the array is indeed finite. 
+
+You should calculate the power of $t$ given subarrays.
+## Mo's Algorithm 
+The Mo’s Algorithm is a powerful and efficient technique for **solving a wide variety of range query problems.** 
+It becomes particularly **useful for kind of queries where the use of a Segment Tree or similar data structures are not feasible.** 
+**This typically occurs when the query is non-associative, meaning that the result of a query on a range cannot be derived by combining the answers of the subranges that cover the original range.**
+
+Mo’s algorithm typically achieves a time complexity of $O((n+q)\sqrt n)$, where $n$ represents the size of the dataset, and $q$ is the number of queries.
+
+**Let's consider an easier problem than Powerful Array**
+We are given an array $A[0,n-1]$ consisting of colors, with each color represented by an integer within $[0,n-1]$. 
+Additionally we are given a set of $q$ range queries called `three_or_more`. 
+The query `three_or_more(l,r)` aims to count the colors that occur at least three times in the subarray $A[l..r]$. 
+
+A **straightforward solution** for the problem: simply scan the subarray and use an additional array as a counter to keep track of occurrences of each color within the range. 
+Whenever a color reaches three the answer is incremented by 1.
+Mind that after each query we have to reset the array of counters. 
+
+Indeed, it’s evident that it has a time complexity of $\Theta(qn)$. 
+Consider the following worst case: we have $n$ queries, and the first query range has a length of $n$ and spans the entire array. 
+Then, the subsequent queries are each one unit shorter, until the last one, which has a length of one. 
+The total length of these ranges is $\Theta(n^2)$, which is also the time complexity of the solution.
+
+**Let's now see the solution using the Mo's Algorithm.**
+Suppose we have just answered the query for the range $[l',r']$ and are now addressing the range $[l,r]$. 
+Instead of starting from scratch, we can update the previous answer and counters by adding or removing the contributions of colors that are new in the query range but not in the previous one, or vice versa.
+Specifically, for left endpoints, we must remove all the colors in $A[l',l-1]$ if $l' < l$, or we need to add all the colors in $A[l,l']$ if $l < l'$. The same applies to right endpoints $r$ and $r'$. 
+
+The time complexity of the algorithm remains $\Theta(qn)$. 
+However we observe that a query now executes more quickly if its range significantly overlaps with the range of the previous query. 
+
+This implementation is **highly sensitive to the ordering of the queries.**
+
+The above considerations lead to a question: **if we have a sufficient number of queries, can we rearrange them in a way that exploits the overlap between successive queries to gain an asymptotic advantage in the overall running time?**
+Mo's Algorithm answers positively to this question by providing a reordering of the queries such that the time complexity is reduces to $\Theta((q+n)\sqrt n)$  
+
+The idea is to conceptually partition the array $A$ into $\sqrt n$ buckets, each of size $\sqrt n$, named $B_1,B_2,\dots,B_{\sqrt n}$. 
+A query **belongs** to a bucket $B_k$ if and only if its left endpoint $l$ falls into the $k-\text{th}$ bucket, which can be expressed as $\lfloor l/\sqrt n\rfloor = k$
+Initially we group the queries based on their corresponding buckets, and within each bucket the queries are solved in ascending order of their right endpoints.
+
+The figure shows this bucketing approach and the queries of one bucket sorted by their right endpoint.
+![[Pasted image 20240116094255.png | center | 600]]
+
+**Let's analyze the complexity of the solution using this ordering**
+It is sufficient to count the number of times we move the indexes `cur_l` and `cur_r`. This is because both `add` and `remove` take constant time, and thus the time complexity is proportional to the overall number of moves of these two indexes. 
+
+Let's concentrate on a specific bucket. As we process the queries in ascending order of their right endpoints, the index `cur_r` moves a total of at most $n$ times. 
+On the other hand, the index `cur_l` can both increase and decrease but it is limited within the bucket, and thus it cannot move more than $\sqrt n$ times per query. 
+Thus, for a bucket with $b$ queries, the overall time to process its queries is $O(b\sqrt n + n)$. 
+
+Summing up over all buckets the time complexity is $\Theta(q\sqrt n + n\sqrt n)$, aka $\Theta((n+q)\sqrt n))$. 
+
+**Final Considerations on Mo's Algorithm**
+Mo’s algorithm is an **offline approach**, which means we cannot use it when we are constrained to a specific order of queries or when update operations are involved.
+
+When implementing Mo’s algorithm, the most challenging aspect is implementing the functions `add` and `remove`. 
+There are query types for which these operations are not as straightforward as in previous problems and require the use of more advanced data structures than just an array of counters
+## Solution
+We can just use Mo's Algorithm and a little bit of attention in updating the answer after a `add` or a `remove`.
+
+The solution is identical to the one seen in the previous problem, with one difference. 
+We are not interested anymore in the number of occurrences of $i$, denoted $K_i$, in a given subarray, but we want to compute $$\Sigma_i\ K_i^2\cdot i,\ i\in [l,r]$$
+**When we increase the number of an occurrence we have to first remove the number obtained when we thought that there was one less occurrence.** 
+Code talks more than words: 
+```rust 
+let mut add = |i| {
+	// we found another occurrence of i, we remove the old "power"
+	sum -= counters[a[i]] * counters[a[i]] * a[i];
+	counters[a[i]] += 1;
+	// we update the power using the right number of occurreces of i
+	sum += counters[a[i]] * counters[a[i]] * a[i];
+};
+
+let mut remove = |i| {
+	sum -= counters[a[i]] * counters[a[i]] * a[i];
+	counters[a[i]] -= 1;
+	sum += counters[a[i]] * counters[a[i]] * a[i];
+};
+```
+
+# Dynamic Programming
+**Dynamic Programming solves problems by combining solutions of subproblems.** 
+Divide-and-Conquer algorithms partitions the problem into disjoint subproblems, solve the subproblems and then combine their solutions to solve the original problem. 
+In contrast, **dynamic programming applies when subproblems overlap, that is, when sub-problems share sub-sub-problems.**
+
+**A dynamic programming algorithm solves each sub-sub-problem just once and then saves its answer in a table, avoiding the work of recomputing the answer every time it solves each sub-sub-problem.** 
+
+**Classic example on how Fibonacci computes the same stuff over and over** and how this can be fixed with dynamic programming, either using **tabulation** or **memoization**
+- **tabulation:** completely fills a "table" (an array or a matrix) and then return the last element as a result. it is intuitive but may compute sub-solution that are not really used for the computation of the target result 
+- **memoization:** compute the result of a sub-problem only if it is the first time it encounters it and then save the result in a table, so that every time the same subproblem is found again the answer is already in "cache"
+# Longest Common Subsequence
+Given two strings, `S1` and `S2`, the task is to find the length of the longest common subsequence, i.e. longest subsequence present in both strings. 
+**Observation:** subsequence != substring. A subsequence do not have to be contiguous. 
+
+The subproblems here is to compute the LCS on prefixes of `S1` and `S2`: given two prefixes `S1[1..i]` and `S2[1..j]` we want to compute `LSC(S1[1..i], S2[1..j])`
+
+If we assume that we have already computed
+1) `LCS(S1[1,i-1], S2[1,j-1])`
+2) `LCS(S1[1,i], S2[1,j-1])`
+3) `LCS(S1[1,i-1], S2[1,j])`
+
+Then we have that 
+$$\text{LCS(S1[1, i], S2[1, j])} = 
+	\begin{align}
+	\begin{cases}
+		0\ &\text{if i = 0 or j = 0} \\
+		\text{LCS(S1[1, i-1], S2[1, j-1]) + 1}\ &\text{if S1[i] == S2[j]} \\
+		\max(\text{LCS(S1[1, i], S2[1, j-1]), LCS(S1[1, i-1], S2[1, j])})\ &\text{otherwise}
+	\end{cases}
+	\end{align}$$
+
+**In practice** we create a matrix `dp[n+1][m+1]` where `n` is the length of `S1` and `m` is the length of `S2`, we set the first row and column to `0` (as they represent the LCS with prefix length `0`) and then iterate, using two nested loop, to check if `s[i] = s[j]` and in such case increase by one the previous LCS (`dp[i-1][j-1]`), otherwise to pick the max between the LCS of `S1` without the current character and `S2` without the current character
+Then we return `dp[n][m]`, which is the LCS of $S1[1..n]$ and `S2[1..m]` aka `S1` and `S2`
+# Minimum Number of Jumps
+Consider an array of `N` integers `arr[]`. 
+Each element represents the maximum length of the jump that can be made forward from that element. 
+This means if `arr[i] = x`, then we can jump any distance `y` such that `y <= x`.  
+Find the minimum number of jumps to reach the end of the array starting from the first element. 
+If an element is 0, then you cannot move through that element.  
+**Note:** Return -1 if you can't reach the end of the array.
+
+**To solve this problem** we use **DP Tabulation**:
+Create an array `jumps[n]`, our dp array, where `jumps[i]` will be the minimum number of jumps needed to reach the position `i`. 
+`jumps` is initialized with `Integer.MAX` everywhere besides `jumps[0]`, which is `0` by definition (we start at position `0`, no jumps are needed). 
+
+Then we use two nested loop to solve the problem
+- outer loop: `i = 1 to n`
+	- inner loop: `j = 0 to i`
+		- we want to reach `i`: is `i` less than the number of jumps required to reach `j` (**if j is reachable**) plus the number of jumps we can make from `j`? 
+			- then `jumps[i]` = the minimum between itself and `arr[j]` + `jumps[j]`
+
+return `jumps[n-1]`
+# Knapsack 0/1
+We are given $n$ items. 
+Each item $i$ has a value $v_i$ and a weight $w_i$. We need to put a subset of these items in a knapsack of capacity $C$ to get the maximum total value in the knapsack. 
+**It is called 0/1 because each item is either selected or not selected.** 
+
+We can use the following solutions: 
+1) if $C$ is small we can use **Weight Dynamic Programming.** The time complexity is $\Theta(Cn)$
+2) If $V = \Sigma_i\ v_i$ is small we can use **Profit Dynamic Programming.** The time complexity is $\Theta(Vn)$ 
+3) if both $V$ and $C$ are large we can use *branch and bound*, not covered here. 
+
+**Weight Dynamic Programming**
+The idea is to fill a $(n+1)\times (C+1)$ matrix $K$. 
+Let $K[i,A]$ be the max profit for weight $\le A$ using items from 1 up to $i$.
+![[Pasted image 20240116180507.png | center | 600]]
+**Profit Dynamic Programming**
+The idea is similar. 
+We can use a $(n+1)\times (V+1)$ matrix $K$. 
+Let $K[V][i]$ be the minimum weight for profit at least $V$ using items from $1$ up to $i$. 
+Thus we have:
+$$K[V][i] = \min(K[V][i-1], K[V-v[i][i-1])$$
+The solution is $\max(a:K[V,n]\le C)$ 
+# Partial Equal Subset Sum
+Given an array `array[]` of size `N`, check if it can be partitioned into two parts such that the sum of elements in both parts is the same.
+
+As in the 0/1 knapsack problem we construct a matrix $W$ with $n+1$ rows and $v+1$ columns. 
+Here the matrix contains booleans. 
+The entry $W[i][j]$ is `true` if and only if there exists a subset of the first $i$ items with sum $j$, false otherwise. 
+The entries of the first row $W[0][]$ are set to false, as with $0$ elements you can not make any sum, and entries of the first column $W[][0]$ are set to true, as with the first $j$ elements you can always make a subset that has sum $0$, the empty subset. 
+
+Entry $W[i][j]$ is true either if $W[i-1][j]$ is true or $W[i-1][j - S[i]]$ is true. 
+- $W[i-1][j] = \text{T}$, we simply do not take the $i$-th element, and with the elements in $1, i-1$ we already can make a subset which sum is $j$ 
+- $W[i-1][j-S[i]] = \text{T}$, as before: if the subset with one element less than $i$ has sum equal to $j - S[i]$ it means that if we take $i$ we reach exactly a subset with sum $j$
+
+**Said easy:**
+- we divide the sum of the array by $2$: if the sum is not divisible by $2$ it means that there cannot be two partitions that summed gives the the sum.
+- once divided is the same problem above: 
+	- exists a subset of the elements that summed gives the half of the sum?
+		- if yes then the answer will be true, false otherwise
+# Longest Increasing Subsequence
+Given an array of integers, find the **length** of the **longest (strictly) increasing subsequence**
+from the given array.
+**observation:** subsequence, as before, it is not a contiguous. 
+
+Consider the sequence $S[1,n]$, let $LIS(i)$ be the $LIS$ of the prefix $S[1,i]$ whose last element is $S[i]$. 
+$$LIS(i) = \begin{cases}1 + \max(LIS(j)\ |\ 1\le j\le i\ \text{and}\ S[j] < S[i]\\ 
+1 \text\ \ \ \ \text{if such $j$ does not exists}
+\end{cases}$$
+
+We create a `lis` dp array where `lis[i]` = longest increasing subsequence of `S[1..i]` and we use it to solve the problem.
+Obviously `lis` is all initialized to `1` as every element is by itself an increasing subsequence of length 1.
+
+The reasoning is the following:
+- outer loop (`for i in 1..n`) iterates over each element of the array starting from the second element.
+	- The inner loop (`for j in 0..i`) iterates over elements before the current element `arr[i]`.
+		- **if** 
+			- the current element `array[i]` is greater than the element `array[j]` (hence, the element at position `i` could be the next element of the sequence that ends at position j)
+			- the longest increasing subsequence that ends in `array[i]` is shorter than the sequence that ends in `j` (`lis[j]`) plus 1 (the maybe added element `array[i])
+		- **then:** we say that `lis[i] = lis[j] + 1`
+
+We finally return the maximum value of `lis`. 
+This solution takes $O(n^2)$
+## Speeding up LIS
+We can also exploit **binary search** to compute the longest increasing subsequence more efficiently, in $O(n\log(n))$ time. 
+
+- create a list `ans`
+- insert the first element of the array in `ans`
+- iterate through the element of the array, `i = 1 to n`
+	- **if** `array[i]` is greater than the last element in `ans` then we append it at the end
+	- **else** we binary search `ans`: we find the index, `low`, of the smallest element that is greater than `array[i]` in `ans` and we replace it: `ans[low] = array[i]`
+- we return the length of `ans`
+
+**Said easy:**
+- the length of `ans` is the length of the current LIS. 
+- when we substitute, we insert `nums[i]` in position `low` of `ans`. 
+- the position `low` is the index of the smallest element grater than `nums[i]` in `ans`. 
+	- this is obvious: we can substitute `ans[low]` with a smaller element without affecting the longest increasing subsequence, that remains valid. 
+- substituting `ans[low]` with `nums[i]` let us "consider" a new LIS starting from `nums[i]`, this is because when we substitute we insert in a place that is still part of the current LIS, but if a new LIS would start entirely from the current element every element would be substituted **starting from that element** thanks to binary search
+# Longest Bitonic Subsequence
+Given an array `array[]` containing $n$ positive integers, a subsequence is called **bitonic** if it is first increasing, then decreasing. 
+Write a function that takes an array as argument and returns the length of the longest bitonic subsequence. 
+A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty. 
+
+**Reminder:** as always, subsequences are not necessarily contiguous elements.
+
+**To solve the problem** we simply reapply LIS, first left to right and then right to left. 
+# Greedy Algorithms
+A **greedy algorithm** is any algorithm that follows the problem-solving heuristic of making the locally optimal choice at each stage. 
+In many problems a greedy strategy **does not produce an optimal solution**, but a greedy heuristic **can yield locally optimal solutions** that approximate a globally optimal solution in a reasonable amount of time. 
+
+Most problems for which greedy algorithms yields good solutions (good approximation of the globally optimal solution) have two property: 
+1) **greedy choice property:** we can make whatever choice seems best at the moment and then solve the subproblems that arise later. A **a greedy algorithm never reconsider its choices**. This is **the main difference from dynamic programming**, which is exhaustive and is guaranteed to find the solution. 
+2) **optimal substructure:** a problem exhibits optimal substructure if an optimal solution to the problem contains optimal solutions to the sub-problems. 
+# Meetings in One Room
+There is **one** meeting room in a firm. 
+There are `N` meetings in the form of `(start[i], end[i])` where `start[i]` is start time of meeting `i` and `end[i]` is finish time of meeting `i`.  
+Find the maximum number of meetings that can be accommodated in the meeting room, knowing that only one meeting can be held in the meeting room at a particular time.
+
+**Note:** Start time of one chosen meeting can't be equal to the end time of the other chosen meeting.
+
+**To solve this problem** we use a greedy approach: 
+- sort the meetings by their starting time
+- schedule the first meeting and save its ending in a variable `ending`
+- iterate from the second meeting to the last one, `for meeting in meetings`
+	- if `meeting` starts after the ending of the last meeting, aka if `meeting.end >= ending` then we can hold this meeting
+		- increase the counter of meetings 
+		- update `ending` with the end of this scheduled meeting
+- return the counter
+# Wilbur and Array
+You have an array `a[n]` with all zeroes, and a target array `b[n]` that you want to reach. 
+The only operation available on `a` is `plusOne(i)` that increase by 1 all the elements in `a[i..n]` and `minusOne(i)` that decrease by 1 all the elements in `a[i..n]`
+
+**Example:** 
+- input: 
+	- 5, the size of the array $a$ `= [0,0,0,0,0]`
+	- `[1,2,3,4,5]`, the target array $b$
+- output: 
+	- 5, as we need five `+1` operation, one for every element `i`
+		- `i = 0: +1` $\rightarrow$ `a = [1,1,1,1,1]`
+		- `i = 1: +1` $\rightarrow$ `a = [1,2,2,2,2]`
+		- ...
+
+What is the minimum number of operations that can be done to match `a` and `b`?
+
+**Observation:**
+The number of operations is the the difference in absolute value between an element and its successor: 
+- if `a[i] = x` and `b[i] = y` with `x > y` then we will have to make `add(i)` `y - x` times
+- same reasoning with negative values ecc. 
+
+**Said easy:**
+Based on the previous observation we can say that
+$$\text{result} = v[1] + \Sigma_{i=2}^n\ |v_i-v_{i-1}|$$
+# Woodcutters
+We use a greedy approach to solve the problem. 
+1) we always cut the first tree, making it fall to the left
+2) we always cut the last tree, making it fall to the right
+3) we **prioritize** **left falls**, meaning that if we can make the current tree falling to the left we always will: consider the current tree $i$
+	1) if the previous tree is at a point $x_{i-1}$ that is smaller (aka farther) that where the current tree would fall, then we cut the tree and make it fall to the left
+	2) else, if the current tree position $x_i$ plus its height $h_i$ do not fall over next tree $i+1$ we cut to the right
+		1) in this case we also update $x_i$ as $x_i + h_i$, the tree has fallen to the right and from the standpoint of the next tree its position is $x_i+h_i$
+	3) otherwise we do nothing
+# Bipartite Graph
+A **Bipartite Graph** **is a graph whose vertices can be divided into two independent sets**, $U$ and $V$, such that every edge $(u, v)$ either connects a vertex from $U$ to $V$ or a vertex from $V$ to $U$. 
+In other words, for every edge $(u, v)$, either $u$ belongs to $U$ and $v$ to $V$, or $u$ belongs to $V$ and $v$ to $U$. 
+We can also say that there is no edge that connects vertices of same set.
+
+**A bipartite graph is possible if the graph coloring is possible using two colors such that vertices in a set are colored with the same color.**
+
+You are given an adjacency list of a graph **adj**  of V of vertices having 0 based index. Check whether the graph is bipartite or not.
+
+**To solve the problem** we use a 1-level Breadth-First Search (BFS) approach 
+- iterates through nodes
+	- if the node has not a color assigned then we start our BFS
+		- color it "blue"
+		- iterate through all of its neighbors
+			- if the neighbor is not colored, color it red
+			- it the neighbor is colored and it has the same color (blue) then return false, the graph is not bipartite
+	- return true

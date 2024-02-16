@@ -757,8 +757,7 @@ After `u` updates are over, there will be `q` queries each containing an index f
 To efficiently solve this problem we introduce a new data structure, the **Fenwick Tree**
 ## 11.1 - Fenwick Tree
 **The Fenwick Tree, also known as the Binary Indexed Tree (BIT), is a data structure that maintains the prefix sums of a dynamic array.** 
-**With this data structure we can update values in the original array and still answer prefix sum queries.** 
-Both operations runs in **logarithmic time**.
+**With this data structure we can update values in the original array and still answer prefix sum queries, both in logarithmic time**.
 
 Consider the following problem: we have an array `A[1..n]` of integers and we would like to support the following operations: 
 - `sum(i)` returns the sum of the elements in `A[1...i]`
@@ -1034,17 +1033,20 @@ We provide two solutions to this problem:
 - with Fenwick Tree
 - with Segment Tree
 ## 12.1 - Fenwick Tree Solution
-We use a sweep line & Fenwick tree approach. 
+**We use a sweep line & Fenwick tree approach.** 
 
-We build an array `events` where every entry is `[l_i, r_i, i]`, and then we sort `events` by start of the range `l_i`
-Then we build the Fenwick tree with size $2n+1$ and we scan each segment $[l_i, r_i]$ and add $1$ in each position $r_i$ in the fenwick tree. 
+We build an array `events` where every entry is `[l_i, r_i, i]`, and then we sort `events` by start of the respective range, `l_i`.
 
-Now we scan the segments again. 
-When we process the segment $[l_i, r_i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
-Now to find the solution of this problem for the current segment (aka the number of segments contained in the current one) we need to know the number of these segments (the ones that starts before the current one) that also end before the current one, before $r_i$. 
-This is computed with a query `sum(r_i)` on the Fenwick Tree.
-After computing the solution for the current segment we subtract $1$ to position $r_i$, to remove the contribution of the right endpoint of the current segment. 
+Then we build the Fenwick tree with size $2n+1$, we scan each event $[l_i, r_i, i]$ and add $1$ in each position $r_i$ in the fenwick tree. 
 
+Now we scan the events again. 
+When we process the event $[l_i, r_i, i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
+
+To find the solution of this problem for the current segment (aka the number of segments contained in the current one) we need to know the number of the segments that starts after the current one that also end before the current one, before $r_i$. 
+This is computed with a query `sum(r_i)` on the Fenwick Tree. 
+
+After computing the solution for the current segment we subtract $1$ to position $r_i$, to remove the contribution of the right endpoint of the current segment in the next queries.
+This is why the segments that starts before the current one but overlaps with it are not counted
 The following snippet implement the solution above, using the Fenwick tree previously defined. 
 ```rust
 fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
@@ -1144,8 +1146,15 @@ Obviously we will start the traversal from the root vertex of the Segment Tree.
 ![[Pasted image 20240112103329.png | center | 450]]
 **Let's now reason about the complexity of the algorithm.**
 We have to show that we can compute the sum queries in $O(\log(n))$.
-**Theorem:** for each level we only visit no more than four vertices.
+
+**Theorem:** For each level we only visit no more than four vertices.
 And since the height of the tree is $O(\log(n))$, we receive the desired running time. 
+
+**Proof:** We can show that this proposition (at most four vertices each level) is true by **induction.** 
+- **base case:** at the first level we only visit one vertex, the root vertex, so here we visit less than four vertices. 
+- **inductive case:** let's look at an arbitrary level. By induction hypothesis, we visit at most four vertices. **If** we only visit at most two vertices, the next level has at most four vertices. That is trivial, because each vertex can only cause at most two recursive calls. **So let's assume** that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.
+
+The query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need   $O(\log n)$  such segments, which gives the effectiveness of the Segment Tree.
 #### 12.2.1.3  - Update Queries
 Now we want to modify a specific element in the array, let's say we want to do the assignment $a[i] = x$. And we have to rebuild the Segment Tree, such that it corresponds to the new, modified array. 
 
@@ -1334,7 +1343,7 @@ pub fn mos(a: &[usize], queries: &[(usize, usize)]) -> Vec<usize> {
     // Sort the queries by bucket, get the permutation induced by this sorting.
     // The latter is needed to permute the answers to the original ordering
     let mut sorted_queries: Vec<_> = queries.iter().cloned().collect();
-	    let mut permutation: Vec<usize> = (0..queries.len()).collect();
+	let mut permutation: Vec<usize> = (0..queries.len()).collect();
 
     let sqrt_n = (a.len() as f64) as usize + 1;
     sorted_queries.sort_by_key(|&(l, r)| (l / sqrt_n, r));
@@ -1480,7 +1489,7 @@ Tabulation builds a table bottom-up, while memorization caches results top-down.
 ## 14.2 - Solution
 Now that we have refreshed dynamic programming we can go back to our problem. 
 
-The subproblems here ask to compute the longest common subsequence (LCS) of prefixes of the two sequences `S1` and `S2`: given two prefixes `S1[1,i]` and `S[1,j]` our goal is to compute `LCS(S1[1,i], S2[1,j])`
+The subproblems here ask to compute the longest common subsequence (LCS) of prefixes of the two sequences `S1` and `S2`: given two prefixes `S1[1,i]` and `S2[1,j]` our goal is to compute `LCS(S1[1,i], S2[1,j])`
 
 Assume that we already know the solutions to the following three smaller problems
 1) `LCS(S1[1,i-1], S2[1,j-1])`
@@ -1524,7 +1533,7 @@ longestCommonSubsequence(x, y)
 			else 
 				dp[i][j] = max(dp[i][j-1], dp[i-1][j])
 
-	return C[n-1][m-1]
+	return dp[n-1][m-1]
 ```
 # 15 - Minimum Number of Jumps
 Consider an array of `N` integers `arr[]`. 
@@ -1837,7 +1846,7 @@ meetingsInARoom(meetings)
 # 20 - Wilbur and Array
 Wilbur the pig is tinkering with arrays again. 
 He has the array $a_1,\dots,a_n$ initially consisting on $n$ zeroes.
-At one step he can choose any index $i$ and either add $1$ to all elements $a_i,\dots, a_n$ or subtract $1$ from all elements $a_i,\dots,a_n$. 
+At one step he can choose any index $i$ and either add $1$ to all elements $a_i,\dots, a_n$ or subtract $1$from all elements $a_i,\dots,a_n$. 
 His goal is to end up with the array $b_1,\dots,b_n$. 
 Of course Wilbur wants to achieve this goal in the minimum number of steps and asks you to compute this value. 
 
