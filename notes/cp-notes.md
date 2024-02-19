@@ -40,15 +40,25 @@ kadane_algorithm(a[])
 ```
 
 ![[IMG_0394.png | center | 600]]
-# 2 - Trapping Rain Water
+# 2 - Missing Number in an Array
+Given an array of size $n-1$ and given that there are numbers from 1 to $n$ with one missing, find the missing number.
+## 2.1 - Trivial Solutions
+- for each element we scan the array searching for the next number, if we do not find it we return $-1$, $O(n^2)$
+- sort the array then find the missing one, $O(n\log(n))$
+## 2.2 - Smart Solution, O(n)
+We use the gauss sum to find the missing number: 
+- compute the sum of the elements of the array, `actualSum`
+- compute the sum of the first $n$ elements: `sum = ` $\frac{n(n+1)}{2}$
+- return `sum - acualSum`
+# 3 - Trapping Rain Water
 Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining. 
 
 ![[Screenshot from 2024-01-05 11-17-40.png | center | 400]]
-## 2.1 -Trivial Solution, O(n^2)
+## 3.1 -Trivial Solution, O(n^2)
 Traverse every array element and find the highest bars on the left and right sides. 
 Take the smaller of two heights. 
 The difference between the smaller height and the height of the current element is the amount of water that can be stored in this array element.
-## 2.2 - Smart Solution: Precomputation, O(n)
+## 3.2 - Smart Solution: Precomputation, O(n)
 **The point is to think locally, not globally.**
 **We compute the left and right leaders.** 
 
@@ -66,7 +76,7 @@ Now, how many units of water we can find on top of the cell $i$?
 The minimum height between the left and right leader of the current position minus $h[i]$, the height of the current position: 
 $$w(i) = \min(\text{LL[$i$]}, \text{RL[$i$]}) - h[i]$$
 ![[Pasted image 20240105111518.png | center | 500]]
-## 2.3 - Optimal Solution: Two Pointers, O(N)
+## 3.3 - Optimal Solution: Two Pointers, O(N)
 **Two Pointer Technique, more on this later.**
 The idea is taken from the Precomputation solution, where we only use two variables to store the currently "meaningful" leaders. 
 
@@ -113,11 +123,11 @@ max_water(heights[])
 
 	return result
 ```
-# 3 - Find Peak Element
+# 4 - Find Peak Element
 ![[Screenshot from 2024-01-05 15-00-58.png | center | 700]]
 To solve this problem we use **Binary Search**. 
 We start by giving the basics of this technique. 
-## 3.1 - Binary Search
+## 4.1 - Binary Search
 **An efficient algorithm that searches for a given key within a sorted array of items.**
 Binary search repeatedly divides the search range in half until the target element is found or the search range becomes empty, resulting in a time complexity of $O(\log n)$
 
@@ -159,8 +169,8 @@ binary_search(a[], target)
 In this implementation, when a match is found, we do not immediately return its position. Instead, we update the `answer` variable and set `high` to the position of this occurrence. 
 This way, we continue the search in the first half of the array, seeking additional occurrences of the `key`. 
 If there are more matches, `answer` will be further updated with smaller positions.
-### 3.1.1 Applications of Binary Search
-#### 3.1.1.1 Binary Search the Answer
+### 4.1.1 Applications of Binary Search
+#### 4.1.1.1 Binary Search the Answer
 Consider a problem where all the possible candidate answers are restricted to a range of values between certain `low` and `high` possible answers. 
 In other words, any candidate answer $x$ falls within the range `[low, high]`. 
 We also have a boolean predicate `pred` defined on the candidate answers that tells us if an answer is good or bad for our aims.
@@ -241,7 +251,7 @@ socialDistancing(intervals, c)
 	
 	rangeBS(1, l+1, pred)
 ```
-## 3.2 - Solution
+## 4.2 - Solution
 **We can use the binary search philosophy to solve the problem.**
 We compute the middle of the array. 
 If the element in the middle is smaller than its right neighbor than the right neighbor could be a leader, and we do `low = mid + 1` to proceed the search in the right side of the array. 
@@ -272,14 +282,14 @@ if a[mid] > a[mid+1] && a[mid] > a[mid-1]
 	return mid
 ```
 but that requires to cover many edge cases (array of size 1, 2, if mid is $0$, if mid is $n-1$, ...)
-# 4 - Maximum Path Sum
+# 5 - Maximum Path Sum
 Find the maximum possible sum from one leaf node to another.
 
 ![[Pasted image 20240108100401.png | center | 490]]
 
 **To solve this problem we need to use a tree traversal.**
 Fist we go back and give the basics. 
-## 4.1 - Tree Traversals 
+## 5.1 - Tree Traversals 
 **Tree traversal** (also known as tree search and walking the tree) **is a form of graph traversal and refers to the process of visiting** (e.g. retrieving, updating, or deleting) **each node in a tree data structure, exactly once.** 
 **Such traversals are classified by the order in which the nodes are visited.**
 
@@ -290,7 +300,7 @@ This is often done via a stack (LIFO) or queue (FIFO).
 In these cases the deferred nodes are stored implicitly in the call stack.
 
 Depth-first search is easily implemented via a stack, including recursively (via the call stack), while breadth-first search is easily implemented via a queue.
-### 4.1.1 - Depth-First Search
+### 5.1.1 - Depth-First Search
 In depth-first search (DFS), **the search tree is deepened as much as possible before going to the next sibling.**
 
 To traverse binary trees with depth-first search, perform the following operations at each node:
@@ -310,7 +320,7 @@ To traverse binary trees with depth-first search, perform the following operatio
 	- Otherwise, **O(h)** where h is the height of the tree
 	- In the worst case, **h** can be the same as **N** (when the tree is a skewed tree)
 	- In the best case, **h** can be the same as **log N** (when the tree is a complete tree)
-#### 4.1.1.1 - PreOrder
+#### 5.1.1.1 - PreOrder
 1) visit the current node, in the figure: position red
 2) recursively traverse the current node's left subtree
 3) recursively traverse the current node's right subtree
@@ -318,7 +328,7 @@ To traverse binary trees with depth-first search, perform the following operatio
 The preorder traversal is a topologically sorted one, because the parent node is processed before any of its child nodes is done. 
 
 ![[Screenshot from 2024-01-08 09-27-13.png | center | 300]]
-#### 4.1.1.2 - PostOrder
+#### 5.1.1.2 - PostOrder
 1) recursively traverse the current node's left subtree
 2) recursively traverse the current node's right subtree
 3) visit the current node, in the figure: position blue
@@ -330,7 +340,7 @@ procedure postorder(node)
 	postorder(node.right)
 	visit(node)
 ```
-#### 4.1.1.3 - InOrder
+#### 5.1.1.3 - InOrder
 1) recursively traverse the current node's left subtree
 2) visit the current node, in the figure: position green
 3) recursively traverse the current node's right subtree
@@ -339,7 +349,7 @@ In a binary search tree ordered such that in each node the key is greater than a
 
 ![[Screenshot from 2024-01-08 09-29-11.png | center | 300]]
 
-## 4.2 Trivial Solution, O(n^2)
+## 5.2 Trivial Solution, O(n^2)
 A simple solution is to traverse the tree and do following for every traversed node $X$: 
 1. Find maximum sum from-leaf-to-root in left subtree of $X\ \clubsuit$
 3. Find maximum sum from-leaf-to-root in right subtree of $X$. 
@@ -405,7 +415,7 @@ So, the trivial solution of **Maximum Path Sum** works as follows:
 	- if the sum is greater than the current maximum we update the current maximum
 
 For every node we call twice `maxLeafRootSum`, which costs O(n), hence the total cost is O(n^2)
-## 4.3 - Optimal Solution, O(n)
+## 5.3 - Optimal Solution, O(n)
 **We can find the maximum sum using single traversal of binary tree**. 
 The idea is to maintain two values in recursive calls
 1. Maximum root-to-leaf path sum for the subtrees rooted under current node. 
@@ -439,10 +449,10 @@ The reasoning is the following:
 - the sum path from $k$ to $j$ (passing by $X$) is greater than the one previously stored? then we update the max
 
 The result is `maxValue` when the program terminates.
-# 5 - Two Sum in a Sorted Array
+# 6 - Two Sum in a Sorted Array
 **This Problem is not mandatory: used to present the Two Pointers Trick.**
 Given a sorted array $a$ (sorted in ascending order), having $n$ integers, find if there exists any pair of elements ($a[i]$, $a[j]$) such that their sum is equal to $x$.
-## 5.1 - Naive Solution, O(n^2)
+## 6.1 - Naive Solution, O(n^2)
 The naive approach is obvious and takes O(n^2), we simply scan the array and we return when we find two numbers that adds up to X. 
 ```java
 existsPairSum(a[], x)
@@ -455,11 +465,11 @@ existsPairSum(a[], x)
 				break // a is sorted, need a new "i"
 	return false
 ```
-## 5.2 - Two Pointers Trick
+## 6.2 - Two Pointers Trick
 Two pointers is really an easy and effective technique that is typically used for searching pairs in a sorted array.
 It employs using two pointer, typically one from the start of the array going left-to-right and one from the end of the array going right-to-left, until they meet. 
 We already seen a sneak peak of this in Trapping Rain Water. 
-## 5.3 - Two Pointers Solution, O(n)
+## 6.3 - Two Pointers Solution, O(n)
 **We take two pointers, one representing the first element and other representing the last element of the array, and then we add the values kept at both the pointers.** 
 
 If their sum is smaller than X then we shift the left pointer to right or if their sum is greater than X then we shift the right pointer to left, in order to get closer to the sum. 
@@ -480,7 +490,7 @@ existsPairSum(a[], x)
 
 	return false
 ```
-# 6 - Frogs and Mosquitoes
+# 7 - Frogs and Mosquitoes
 There are $n$ frogs sitting on the coordinate axis $Ox$. 
 For each frog two values $x_i$, $t_i$ are known - the position and the initial length of the tongue of the $i$-th frog (it is guaranteed that all positions $x_i$ are different).
 $m$ mosquitoes one by one are landing to the coordinate axis. 
@@ -497,7 +507,7 @@ For each frog print two values - the number of eaten mosquitoes and the length o
 
 Each mosquito is landing to the coordinate axis only after frogs eat all possible mosquitoes landed before. 
 Mosquitoes are given in order of their landing to the coordinate axis.
-## 6.1 Binary Search Tree
+## 7.1 Binary Search Tree
 A binary search tree (BST), also called an ordered or sorted binary tree, is a rooted binary tree data structure with the key of each internal node being greater than all the keys in the respective node's left subtree and less than the ones in its right subtree. 
 The time complexity of operations on the binary search tree is linear with respect to the height of the tree.
 
@@ -508,7 +518,7 @@ The complexity analysis of BST shows that, on average, the insert, delete and se
 In the worst case, they degrade to that of a singly linked list: $O(n)$
 
 ![[Pasted image 20240109090705.png | center | 250]]
-### 6.1.1 Searching
+### 7.1.1 Searching
 Searching for a specific key can be programmed recursively or iteratively. 
 
 Searching begins by examining the root node. If the tree is `nil`, the key being searched for does not exist in the tree. 
@@ -517,13 +527,16 @@ Otherwise, if the key equals that of the root, the search is successful and the 
 This process is repeated until the key is found or the remaining subtree is `nil`. 
 If the searched key is not found after a `nil` subtree is reached, then the key is not present in the tree.
 ![[Screenshot from 2024-01-19 15-34-31.png | center | 500]]
-### 6.1.2 Predecessor and Successor
+### 7.1.2 Predecessor and Successor
 For certain operations, given a node $x$, finding the successor or predecessor of $x$ is crucial. 
 Assuming all the keys of the BST are distinct, **the successor of a node** $x$ in BST **is the node with the smallest key greater** than $x$'s key. 
 On the other hand, **the predecessor of a node** $x$ in BST **is the node with the largest key smaller** than $x$'s key. 
 Following is pseudo-code for finding the successor and predecessor of a node $x$ in BST.
 ![[Screenshot from 2024-01-19 15-39-52.png | center ]]
-## 6.2 - Solution
+
+### 7.1.3 Removing Elements
+**TODO**
+## 7.2 - Solution
 We store the position of the frogs in a BST, `frogBST`. 
 When a mosquito lands on a position $b$ we check which frog will eat it by simply doing a `frogBST.predecessor(b)` query on the tree. 
 It is possible that some mosquito cannot be eaten right away, the uneaten mosquito will be stored in their own BST (`mosquitoBST`), using their landing position as keys. 
@@ -544,12 +557,177 @@ The algorithm behaves as follows:
 				- if it is fully contained by `f` then delete this frog as it will never eat
 	- **else**, insert `m` in `mosquitoBST` and continue
 ![[IMG_0413.png | center | 600]]
-
+**TODO**
 **Time Complexity:** 
 - Each predecessor query on the frog tree can be answered in $O(\log(n))$ time.
 - Each successor query of the mosquito tree can be answered in $O(\log(m))$ time.
 - Forcing no overlaps: we can "move/shift" $n$ frogs at most for every mosquito that is eaten, then $O((n+m)\log(n))$ 
-# 7 - Maximum Number of Overlapping Intervals
+
+# 8 - Sliding Window Maximum
+Given an array `A[0, n-1]` and an integer `k`, the goal is to find the maximum of each subarray (window) of `A` of size `k`. 
+## 8.1 - Trivial Solution, O(nk)
+The simplest approach is to consider each of the $n-k+1$ windows independently. 
+Within each window we compute its maximum by scanning the window through all its elements, which takes $O(k)$ time. 
+We then have that this brute force approach takes $O(n\cdot k)$ time. 
+
+**The problem in this approach is that when we compute the maximum of the current window we disregard all the previous computations, done on windows that are partially overlapping to the current one.**
+## 8.2 - BST-Based Solution
+To solve more efficiently the problem we need a data structure that handle the next window while capitalizing on the progress made in processing the preceding window. 
+
+We consider the two following **observations:**
+1) We can represent the elements within a window with a multiset $\mathcal{M}$ of size $k$. In this representation the result for the window is essentially the largest element contained within this multiset. 
+2) When we transition from a window to the next, **only two elements change:** the first element of the first window exits from the scene and the last one enters (the window **slides** of one position to the right). Hence, we can derive the multiset of the new window from the multiset of the previous window by adding one element and removing another one. 
+
+We then require a data structure capable of performing three crucial operations on a (multi)set: 
+- inserting a new element
+- deleting an arbitrary element
+- retrieving the maximum element within the multiset
+
+A Balanced Binary Search Tree (BBST) supports any of these operations in $\Theta(\log|\mathcal{M}|)$ where $|\mathcal{M}|$ is the number of elements in the multiset (and it is **optimal in the comparison model.**)
+This way we can solve the problem in $O(n\log(k))$ time. 
+
+In rust we use `BTreeSet` that offers efficiently the operations `insert`, `remove`, and `last` (find max).
+The only hiccup is that it do not store repeated elements, hence we store elements as pair with their index in the array. 
+## 8.3 - Heap
+A heap is a tree-based data structure that satisfies **the heap property:** 
+- **max-heap:** for any given node `C`, if `P` is a parent node of `C`, then the key of `P` is greater than or equal to the key of `C`. 
+- **min-heap:** the key of `P` is less than or equal to the key of `C`
+
+**The main operations are:**
+- **insertion:** $O(\log(n))$
+	- insert the new element at the bottom of the heap (next available position)
+	- perform "heapify up", an operation to restore the heap property by swapping the element with its parent until the heap property is satisfied again
+- **remove max/min:** $O(\log(n))$
+	- remove the root element (which is the min or the max of the heap)
+	- replace the root with the last element in the heap
+	- perform "heapify down", an operation to restore the heap property by swapping the element with one of its children until the heap property is satisfied again
+- **peek:** $O(1)$
+	- returning the maximum (or the minimum) without removing takes constant time since it is stored in the root node. 
+### 8.3.1 - Heap Solution
+The heap-based solution is theoretically less efficient than the BST one ($O(n\log(n))$ vs $O(n\log(k))$) but in practice it often yields better results. 
+
+Since we are talking about the maximum the immediate choice is a priority queue with its most famous manifestation being the (max-)heap. 
+A max-heap stores a set of $n$ keys and supports three operations: 
+- insert an element in the max-heap, $O(\log(n))$, in rust called `push`
+- report the max element, `peek`
+- extract (remove) the max element, $O(\log(n))$, `pop`
+
+We can solve the sliding window maximum property by employing a `max-heap` and scanning the array from left to right: 
+- populate the max-heap with the first $k$ elements, along with their respective positions (indices)
+	- this gives us the maximum within the initial window 
+- as we move on to process the remaining elements one-by-one, we insert each current element with its position. We request the heap to provide us the current maximum. The current maximum could be outside of the current window: to address this case we continuously extract elements from the heap until the reported maximum is within the constraints of the current window
+
+With this approach there are a total of $n$ insertions and at most $n$ extractions of the maximum in the heap.  
+Since the maximum number of elements present in the heap at any given time is up to $n$ each of these operations takes $\Theta(\log(n))$ time. 
+Consequently the overall time complexity is $\Theta(n\log(n)).$
+
+```java 
+heamSWM(a[])
+	n = a.length()
+	MaxHeap h
+	maxs[n-k+1]
+
+	for i = 0 to k
+		h.push((a[i], i))
+
+	for i = k to n
+		h.push((a[i], i))
+
+		while !h.isEmpty()
+			if h.peek().i < i-(k-1) // max ouside of the window
+				h.pop()
+			else 
+				break
+		maxs.push(h.peek())
+
+	return maxs
+```
+## 8.4 Sliding Window Solution, O(n)
+**TODO**
+The BST solution can do more than what is strictly necessary, e.g. what is the second largest element in the window?
+The fact that we can do much more than what is requested, it’s an important signal to think that a faster solution could exist. 
+
+The better solution uses a **deque** a double-ended queue, which supports constant time insertion, removal and access at the frond and back of the queue. 
+There are many ways to implement a deque, the simplest one (but not the fastest) is a bidirectional list. 
+
+The algorithm starts with an empty deque $Q$ and with the window $W$ that covers the positions in the range $\langle -k, -1\rangle$. 
+That is, the window starts before the beginning of `a`. Then we start sliding the window one position at a time and remove/insert elements from $Q$.
+**The element in front of the deque will be the element to report.**
+
+More precisely, we repeat $n$ times the following steps: 
+- move the window one position to the right
+- remove from the head of $Q$ the elements that are no longer in the window
+- insert the new element from the tail of $Q$ and remove all the elements above it until we find a larger element 
+- report the head of $Q$ as the maximum of the current window 
+
+**Note:** the deque stores indices, not actual elements.
+
+```java 
+// q = [a1, ..., ak]
+//      back     front
+slidingWindowMaximum(a[]) 
+	n = a.length()
+	Deque q
+	maxs[n-k+1]
+
+	for i = 0 to k 
+		while !q.isEmpty() && a[i] > a[q.back()]
+			q.popBack()
+			
+		q.pushBack(i)
+
+	maxs.push(a[q.front()]);
+
+	for i = k to n 
+		// remove elements that dont belongs in the window
+		while !q.isEmpty() && q.front() + k <= i
+			q.popFront()
+
+		while !q.isEmpty() && a[i] > a[q.back()]
+			q.popBack()
+
+		q.pushBack(i)
+		maxs.push(a[q.front()])
+
+	return maxs;
+```
+### 8.4.1 - Correctness
+**TODO**
+**Theorem:** The elements in $Q$ are sorted in decreasing order.
+**Proof:** we prove the theorem by induction on the number of iterations
+- **base case:** $Q$ is empty, true
+- **inductive case:** given the queue after $i$ iterations by inductive hypothesis it is sorted. the current iteration will only remove elements (no change in the ordering of the remaining elements) or insert the current element `a[i+1]` as the tail of the queue just below the first element which is larger than it (if any). Thus the queue remains sorted
+
+Now we introduce the definition of **right leaders of the window** to show that the largest element within the current window is at the top of the queue. 
+Given a window, an element is called a right leader if and only if the element is larger that any other element of the window at its right.
+As an example consider the following image, where the red elements are right leaders: 
+![[Pasted image 20240219095000.png | center | 700]]
+
+**Theorem:** At every iteration $Q$ contains all and only the right leaders of the current window
+**Proof:** 
+- Any right leader cannot be removed from $Q$ as all the subsequent elements are smaller than it.
+- Any non-right leader will be removed as soon as the next right leader enters $Q$
+- Any element outside the window cannot be in $Q$
+	- by contradiction: let's assume that $Q$ contains one such element `x`. Let `r` be the largest right leader. On the one hand `x` cannot be smaller or equal to `r`, otherwise `x` would be removed when inserting `r` in $Q$, On the other hand `x` cannot be larger than `r` otherwise it would be in front of $Q$ and removed by the first inner loop
+
+**We derive the correctness of the algorithm by combining the sortedness of Q with the fact that the largest right leader is the element to report.**
+### 8.4.2 Time Complexity
+We have a loop that is repeated `n` times. 
+The cost of an iteration is dominated by the cost (and thus the number) if pop operations. 
+However in a certain iteration we may pop out all the elements in the deque. 
+As far as we know there may be up to `n` elements in the deque and thus an iteration costs $O(n)$ time. 
+Thus we get that the cost of the algorithm is $O(n^2)$. 
+**The problem here list in this kind of complexity analysis.**
+
+There may indeed exists very costly iterations but they are greatly amortized by many very cheap ones. 
+Overall, the number of pop operations cannot be larger than $n$ as any element is not considered anymore by the algorithm as soon it is removed from $Q$.
+Each of them cost constant time and thus the algorithm runs in linear time. 
+# 9 - Next Larger Element
+Given an array `A[0..n-1]` having distinct elements, the goal is to find the next greater element for each element of the array in order of their appearance in the array. 
+**Adapt the Sliding Window Maximum Solution.**
+
+**TODO**
+# 10 - Maximum Number of Overlapping Intervals
 Consider a set of $n$ intervals $[s_i, e_i]$ on a line. 
 We say that two intervals $[s_i, e_i]$ and $[s_j, e_j]$ overlaps if and only if their intersection is not empty, i.e., if there exist at least a point $x$ belonging to both intervals. 
 Compute the maximum number of overlapping intervals. 
@@ -557,14 +735,14 @@ Compute the maximum number of overlapping intervals.
 **Example:** 
 ![[Pasted image 20240109094209.png | center | 550]]
 We have a set of 10 intervals, the maximum number of overlapping intervals is 5 (at positions 3 and 4)
-## 7.1 - Sweep Line Algorithm
+## 10.1 - Sweep Line Algorithm
 The Sweep Line Algorithm is an algorithmic paradigm used to solve a lot of problems in computational geometry efficiently. 
 **The sweep line algorithm can be used to solve problems on a line or on a plane.**
 
 The sweep and line algorithm use an imaginary vertical line **sweeping** over the x-axis. 
 As it progresses, we maintain a running solution to the problem at hand. 
 The solution is updated when the vertical line reaches a certain key points where some event happen. The type of the event tells us how to update the solution. 
-## 7.2 Sweep Line Solution, O(n)
+## 10.2 - Sweep Line Solution, O(n)
 Let's apply the sweep and line algorithm to the problem above. 
 We let the sweep line from left to right and stop at the beginning or at the end of every interval. 
 These are the important points at which an event occurs: interval start or end. 
@@ -575,9 +753,54 @@ The figure below shows the points touched by the sweep line and the values of th
 ![[Pasted image 20240109095128.png| center | 550]]
 **Observation:** The sweep line only touches points on the x-axis where an event occurs. 
 This is important because the number of considered points, and thus the time complexity, is proportional to the number of intervals, and not to the size of the x-axis. 
-# 8 - Check if all Integers in a Range are Covered
+# 11 - Closest Pair of Points
+Let’s tackle a second problem to apply the **sweep line paradigm** to a **two-dimensional problem.**
+
+We are given a set of $n$ points in the plane. The goal is to find the closest pair of points in the set. 
+The **distance** between two points $(x_1,y_1)$ and $(x_2, y_2)$ is the Euclidian distance $$d((x_1,y_1), (x_2, y_2)) = \sqrt{(x_1-x_2)^2 + (y_1 - y_2)^2}$$A **brute force** algorithm computes the distance between al possible points, resulting in a time of $O(n^2)$. 
+
+**Let's now use the sweep-line technique.** 
+We start by sorting the points in increasing order of their $x-$coordinates. 
+We keep track of the shortest distance, denoted with $\delta$, seen so far. 
+Initially we set $\delta$ to the distance of an arbitrary pair of points. 
+
+Then we use a vertical sweep line to iterate through the points, attempting to improve the current shortest distance $\delta$.
+Consider the point $p = (x,y)$ just reached by the vertical sweep line. 
+We can improve $\delta$ if the closest point to the left of $p$ has a smaller distance than $\delta$. 
+If such point exists it must have a $x-$coordinate in the interval $[x-\delta, x]$ as it is to the left of $p$, and a $y-$coordinate in the interval $[y - \delta, y+\delta]$. 
+
+The following figure shows the rectangle within this point must lie.
+![[Pasted image 20240219103626.png | center | 250]]
+There can be **at most 6 points** within this rectangle. 
+The 6 circles within the perimeter of the rectangle represent points that are at distance exactly $\delta$ apart from each other. 
+
+**Four our purpose a slightly weaker result is enough, which states that the rectangle contains at most 8 points.** 
+To understand why consider the 8 squares in the figure above. 
+Each of these squares, including its perimeter can contain **at most one point.** 
+Assume, for sake of contradiction, that a square contains two points, denoted as $q$ and $q'$. 
+The distance between $q$ and $q'$ is smaller than $\delta$. If point $q'$ exists it would already been processed by the sweep line because it has an $x-$coordinate smaller than that of $p$. 
+However this is not possible, because otherwise the value of $\delta$ would be smaller than its current value.
+
+Let's use the above intuition to solve the problem. 
+We maintain a BST with points sorted by their $y-$coordinates. 
+When processing a point $p = (x,y)$ we iterate over the points with coordinates in the interval $[y - \delta, y + \delta]$. 
+If the current point has an $x-$coordinate smaller than $x-\delta$ we remove this point from the set. It will never be useful anymore. 
+Otherwise we compute its distance with $p$ and $\delta$ if needed. 
+Before moving the sweep line to the next point, we insert $p$ in the set. 
+
+**What is the complexity of the algorithm?**
+Identifying the range of points with the required $y-$coordinates takes $\Theta(\log(n))$ time. 
+Iterating over the points in this range take constant time per point and removing one of them takes $\Theta(\log(n))$. 
+How many points we do iterate over? There can be at most 6 points that have an $x-$coordinate greater or equal to $x-\delta$ and therefore survive. 
+On the other hand there can be many points with smaller $x-$coordinates. 
+However, since each point is inserted and subsequently removed from the set at most once during the execution of the algorithm, the cost of dealing with all these points is at most $O(n\log(n))$. 
+
+**In rust:**
+- compute the distance squared to avoid dealing with float
+- swap the roles of $x$ and $y$ since we cannot insert in `BTreeSet` ordering by the second component
+# 12 - Check if all Integers in a Range are Covered
 ![[Screenshot from 2024-01-09 10-01-57.png | center | 700]]
-## 8.1 - Intuitive Solution 
+## 12.1 - Intuitive Solution 
 The following is the intuitive solution.
 It has two nested loops, one that iterates `right-left` times and the inner one that iterates $O(n)$ times, where $n$ is the number of ranges. 
 The complexity then is $O(\text{(right-left)}*n)$ time.
@@ -597,7 +820,7 @@ isCovered(ranges, left, right)
 	// each i in [left, right] is covered by at least one range
 	return true;
 ```
-## 8.2 - Sweep Line Solution
+## 12.2 - Sweep Line Solution
 To solve the problem more efficiently we use sweep line and a map. 
 The complexity is linear in the maximum between the number of `ranges` and `right`
 ```java
@@ -620,7 +843,7 @@ isCovered(ranges, left, right)
 
 	return true
 ```
-# 9 - Longest k-Good Segment
+# 13 - Longest k-Good Segment
 The array $a$ with $n$ integers is given. 
 Let's call the sequence of one or more **consecutive** elements in $a$ a segment. 
 Also let's call the segment $k$-good if it contains no more than _k_ different values.
@@ -629,7 +852,7 @@ Also let's call the segment $k$-good if it contains no more than _k_ differe
 
 Find any longest k-good segment.
 **Note:** we return the indexes of the longest k-good segment
-## 9.1 - Sliding Window Solution, O(n)
+## 13.1 - Sliding Window Solution, O(n)
 We use the sliding window approach: the implementation is self-explanatory
 ```java
 longestKGoodSegment(array, k)
@@ -673,7 +896,9 @@ longestKGoodSegment(array, k)
 
 	return (-1,-1)
 ```
-# 10 - Contiguous Subarray Sum
+## 13.2 - Sweep Line Solution
+**TODO**
+# 14 - Contiguous Subarray Sum
 Given an integer array `nums` and an integer `k`, return `true` if `nums` has a **good subarray** or false otherwise. 
 A **good subarray** is a subarray where: 
 - its length is **at least** 2 
@@ -682,9 +907,9 @@ A **good subarray** is a subarray where:
 **Note** that:
 - A **subarray** is a contiguous part of the array.
 - An integer `x` is a multiple of `k` if there exists an integer `n` such that `x = n * k`. `0` is **always** a multiple of `k`.
-## 10.1 - Naive Solution, O(n^2)
+## 14.1 - Naive Solution, O(n^2)
 The obvious brute force approach: from each element we compute every possible subarray starting in that element, check if sum is a multiple of `k` and store the maximum length so far.
-## 10.2 - Prefix Sums 
+## 14.2 - Prefix Sums 
 **Prefix sums**, also known as cumulative sums or cumulative frequencies, **offer an elegant and efficient way to solve a wide range of problems that involve querying cumulative information about a sequence of values or elements.**
 
 The essence of prefix sums lies in **transforming a given array of values into another array, where each element at a given index represents the cumulative sum of all preceding elements in the original array.**
@@ -692,7 +917,7 @@ The essence of prefix sums lies in **transforming a given array of values into a
 An example of prefix sum array is shown in the picture: 
 ![[Pasted image 20240110100959.png | center | 350]]
 Where it is clear that $$P[i] = \Sigma_{j=1}^i\ A[k]$$
-### 10.2.1 Prefix Sum using Rust
+### 14.2.1 - Prefix Sum using Rust
 We can use the combinator `scan` to produce the prefix sums from an iterator. 
 
 `scan` is an **iterator adapter**, it maintains an internal state, initially set to a seed value, which is modified by a closure taking both the current internal state and the current element from the iterator into account.
@@ -710,7 +935,28 @@ let psums = a
 
 assert!(psums.eq(&vec![2, 6, 7, 14, 17, 17, 21, 23]));
 ```
-## 10.3 - Prefix Sum Solution, O(n)
+### 14.2.2 - Applications of Prefix Sum
+#### 14.2.2.1 - Ilya and Queries
+We have a string $s = s_1s_2\dots s_n$ consisting only of characters $a$ and $b$ and we need to answer $m$ queries.
+Each query $q(l,r)$ where $1 \le l \le r \le n$ asks for the number of positions $i \in [l,r]$ such that $s_i = s_{i+1}$ 
+
+Let's consider an example (remember that we use 1-indexing)
+- $s = a\ a\ b\ b\ b\ a\ a\ b\ a$ 
+- $q(3, 6) = 2$
+	- the substring is $b\ b\ b\ a$
+	- the position $3$, $4$, $6$ make true $s_i = s_{i+1}$ but $s_6 = s_{6+1}$ do not count as $6+1 = 7 \notin [3,6]$   
+
+The idea is that of computing the binary vector $B[1,n]$ such that $B[i] = 1$ if $s_i == s_{i+1}$, $0$ otherwise. 
+This way the answer to the query $q(l,r)$ is $$\Sigma_{i=l}^{r-1}\ B[i]$$Thus each query can be solved in constant time computing the prefix sum of the vector $B$.
+#### 14.2.2.2 - Little Girl and Maximum
+We are given an array $A[1,n]$ and a set $Q$ of queries. Each query is a range sum query $i,j$ which returns the sum of the elements in $A[i..j]$. 
+
+The goal is to permute the elements in $A$ in order to maximize the sum of the results of the queries in $Q$.
+
+**TODO**
+#### 14.2.2.3 - Number of Ways
+**TODO**
+## 14.3 - Prefix Sum Solution, O(n)
 The solution is based on the following mathematical property:
 **Observation:** any two prefix sums that are not next to each other with the same mod k, or a prefix sum with mod k = 0 that is not the first number will yield a valid subarray.
 
@@ -746,7 +992,7 @@ checkSubarraySum(array, k)
 
 **Observation:** 
 We really do not need a full prefix sum array, it is enough to compute `sum` as we go and use it also as the mod result (we make `sum = sum%k` and use it as key, sums in modulo works). This is true because we never use the prefix sum of an element before the predecessor, so we can store only the sum up until now. 
-# 11 - Update the Array
+# 15 - Update the Array
 You have an array containing n elements initially all 0. 
 You need to do a number of update operations on it. 
 In each update you specify `l`, `r` and `val` which are the starting index, ending index and value to be added. 
@@ -755,7 +1001,7 @@ After `u` updates are over, there will be `q` queries each containing an index f
 **Observation:** `access(i)` wants the prefix sum of the elements `A[1..i]
 
 To efficiently solve this problem we introduce a new data structure, the **Fenwick Tree**
-## 11.1 - Fenwick Tree
+## 15.1 - Fenwick Tree
 **The Fenwick Tree, also known as the Binary Indexed Tree (BIT), is a data structure that maintains the prefix sums of a dynamic array.** 
 **With this data structure we can update values in the original array and still answer prefix sum queries, both in logarithmic time**.
 
@@ -870,7 +1116,7 @@ And we are done, this is the Fenwick tree of the array `A`.
 3) Let be $h = \lfloor\log(n)+1\rfloor$, which is the length of the binary representation of any position in the range $[1,n]$. Since any position can be expressed as the sum of at most $h$ powers of $2$, the tree has no more than $h$ levels. In fact, the number of levels is either $h$ or $h-1$, depending on the value of $n$ 
 
 Now, let’s delve into the details of how to solve our `sum` and `add` queries on a Fenwick tree.
-### 11.1.1 - Answering a `sum` query
+### 15.1.1 - Answering a `sum` query
 This query involves beginning at a node `i` and traversing up the tree to reach the node `0`
 Thus `sum(i)` takes time proportional to the height of the tree, resulting in a time complexity of $\Theta(\log n)$. 
 
@@ -881,7 +1127,7 @@ This works because the ranges of these nodes ($[1,4], [5,6], [7,7]$) collectivel
 Answering a `sum` query is straightforward **if we are allowed to store the tree's structure.**
 However a significant part of the Fenwick tree's elegance lies in the fact that storing the tree is not actually necessary. 
 This is because **we can efficiently navigate from a node to its parent using a few bit-tricks, which is the reason why the Fenwick trees are also called Binary Indexed Trees.**
-#### 11.1.1.1 - Compute the Parent of a Node
+#### 15.1.1.1 - Compute the Parent of a Node
 We want to compute the parent of a node, and we want to do it quickly and without representing the structure of the tree.
 
 Let's consider the binary representation of the indexes involved in the query `sum(7)`
@@ -889,7 +1135,7 @@ Let's consider the binary representation of the indexes involved in the query `s
 ![[Pasted image 20240110150658.png | center ]]
 
 **Theorem:** the binary representation of a node's parent can be obtained by removing the trailing one (i.e., the rightmost bit set to 1) from the binary representation of the node itself.
-### 11.1.2 - Performing an `add`
+### 15.1.2 - Performing an `add`
 Now we consider the operation `add(i,v)`. 
 We need to add the value `v` to each node whose range include the position `i`.
 
@@ -907,7 +1153,7 @@ If we want to perform `add(5, x)` we just need to modify the nodes in red:
 
 We now know which are the nodes to modify for `add(i, x)`. 
 **Let's discuss how to compute these nodes with bit-tricks.**
-### 11.1.2.1 - Computing the Siblings
+### 15.1.2.1 - Computing the Siblings
 Continuing the above example, starting with `i = 5`, the next node to modify is its right sibling, node 6. 
 Their binary representation is 
 ![[Pasted image 20240110152844.png| center]]
@@ -921,7 +1167,7 @@ In this case, the rightmost and second trailing one are adjacent. To obtain the 
 Thankfully, this effect is one again achieved by adding the trailing one to the node’s ID.
 
 **The time complexity** of `add` is $\Theta(\log(n))$, as we observe that each time we move to the right sibling of the current node or the right sibling of its parent, the trailing one in its binary rep. shifts at lest one position to the left, and this can occur at most $\lfloor\log(n)\rfloor+1$ times.
-## 11.1.2 - Fenwick Tree in Rust
+## 15.1.2 - Fenwick Tree in Rust
 The following is a minimal implementation. 
 While we’ve transitioned to 0-based indexing for queries, internally, we still use the 1-based indexing to maintain consistency with the examples above.
 
@@ -979,7 +1225,7 @@ impl FenwickTree {
     }
 }
 ```
-## 11.2 - Fenwick Tree Solution
+## 15.2 - Fenwick Tree Solution
 We are given an array `A[1,n]` initially set to 0. 
 We want to support two operations: 
 - `access(i)` returns the sum `A[1..i]`
@@ -1023,7 +1269,7 @@ impl UpdateArray {
     }
 }
 ```
-# 12 - Nested Segments
+# 16 - Nested Segments
 We are given $n$ segments: $[l_1, r_1],\dots, [l_n, r_n]$ on a line. 
 There are no coinciding endpoints among the segments. 
 The task is to determine and report the number of other segments each segment contains.
@@ -1032,7 +1278,7 @@ The task is to determine and report the number of other segments each segment co
 We provide two solutions to this problem: 
 - with Fenwick Tree
 - with Segment Tree
-## 12.1 - Fenwick Tree Solution
+## 16.1 - Fenwick Tree Solution
 **We use a sweep line & Fenwick tree approach.** 
 
 We build an array `events` where every entry is `[l_i, r_i, i]`, and then we sort `events` by start of the respective range, `l_i`.
@@ -1073,7 +1319,7 @@ fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
 	sol
 }
 ```
-## 12.2 - Segment Tree
+## 16.2 - Segment Tree
 **A Segment Tree is a data structure that stores information about array intervals as a tree.**
 This allows answering **range queries** over an array efficiently, while still being flexible enough to **allow quick modification of the array**.
 
@@ -1092,7 +1338,7 @@ The formal definition of our task is the following: given an array $a[0,\dots,n-
 **Observation:** even our simple form of Segment Tree is an improvement over the simpler approaches: 
 - a naive implementation that uses just the array can update element in $O(1)$ but requires $O(n)$ to compute each sum query
 - a precomputed prefix sums can compute the sum queries in $O(1)$ but updating an array element requires $O(n)$ changes to the prefix sums
-### 12.2.1 - Structure of the Segment Tree
+### 16.2.1 - Structure of the Segment Tree
 We can take a divide-and-conquer approach when it comes to array segments.
 We compute and store the sum of the elements of the whole array, i.e. the sum of the segment $a[0,\dots,n-1]$. 
 Then we split the array into two halves $a[0,\dots,n/2 -1]$ and $a[n/2,\dots, n-1]$, compute the sum of each halves and store it. Each of this halves are split in half, and so on until all segments reach size 1. 
@@ -1108,7 +1354,7 @@ Thus, the number of vertices in the worst case can be estimated by the sum
 $$1+2+4+\dots+ 2^{\lceil\log(n)\rceil+1}<4n$$
 Mind that whenever $n$ is not a power of 2, not all levels of the Segment Tree will be completely filled, as shown in the image. 
 **The height of a Segment Tree** is $O(\log(n))$, because when going down the root to the leaves the size of the segments decrease approximately by half. 
-#### 12.2.1.1 - Construction
+#### 16.2.1.1 - Construction
 Before constructing the segment tree we need to decide: 
 - the value that gets stored at each node of the segment tree. In a sum segment tree a node would store the sum of the elements in its range $[l,r]$
 - the merge operation that merges two sibling in a segment tree. In a sum segment tree, the two nodes corresponding to the ranges $a[l_1,\dots,r_1]$ and $a[l_2,\dots,r_2]$ would be merged into a node corresponding to the range $a[l_1,\dots,r_2]$ by "concatenating" the values of the two nodes
@@ -1126,7 +1372,7 @@ The construction procedure, if called of a non-leaf vertex, does the following:
 
 We start the construction at the root vertex, and hence, we are able to compute the entire segment tree. 
 The **time complexity of the construction** is $O(n)$, assuming that the merge operation is $O(1)$, as the merge operation gets called n times, which is equal to the number of internal nodes in the segment tree.
-#### 12.2.1.2 - Sum Queries
+#### 16.2.1.2 - Sum Queries
 We receive two integers $l$ and $r$, and we have to compute the sum of the segment $a[l,\dots,r]$ in $O(\log(n))$ time. 
 To do this we will traverse the tree and use the precomputed sums of the segments. 
 
@@ -1155,7 +1401,7 @@ And since the height of the tree is $O(\log(n))$, we receive the desired running
 - **inductive case:** let's look at an arbitrary level. By induction hypothesis, we visit at most four vertices. **If** we only visit at most two vertices, the next level has at most four vertices. That is trivial, because each vertex can only cause at most two recursive calls. **So let's assume** that we visit three or four vertices in the current level. From those vertices, we will analyze the vertices in the middle more carefully. Since the sum query asks for the sum of a continuous subarray, we know that segments corresponding to the visited vertices in the middle will be completely covered by the segment of the sum query. Therefore these vertices will not make any recursive calls. So only the most left, and the most right vertex will have the potential to make recursive calls. And those will only create at most four recursive calls, so also the next level will satisfy the assertion. We can say that one branch approaches the left boundary of the query, and the second branch approaches the right one.
 
 The query works by dividing the input segment into several sub-segments for which all the sums are already precomputed and stored in the tree. And if we stop partitioning whenever the query segment coincides with the vertex segment, then we only need   $O(\log n)$  such segments, which gives the effectiveness of the Segment Tree.
-#### 12.2.1.3  - Update Queries
+#### 16.2.1.3  - Update Queries
 Now we want to modify a specific element in the array, let's say we want to do the assignment $a[i] = x$. And we have to rebuild the Segment Tree, such that it corresponds to the new, modified array. 
 
 This query is easier than the sum query. Each level of a segment tree forms a partition of the array. Therefore an element $a[i]$ only contributes to one segment from each level. 
@@ -1165,7 +1411,7 @@ It is easy to see that the update request can be implemented using a recursive f
 
 **Example:** given the same array as before, we want to perform the update $a[2] = 3$ 
 ![[Pasted image 20240112112424.png | center | 450]]
-### 12.2.2 Range Update and Lazy Propagation
+### 16.2.2 Range Update and Lazy Propagation
 Segment Trees allows applying modification queries to an entire segment of contiguous elements and perform the query in the same time $O(\log(n))$. 
 When we need to update an interval we will update a node and mark its child that it needs to be updated and update it only when needed. 
 To every node we add a field that marks if the current node has a pending update or not. 
@@ -1186,7 +1432,7 @@ With Lazy propagation, we update only node with value $27$ and postpone updates 
 The size of `lazy[]` is same as array that represents segment tree.
 The idea is to initialize all elements of `lazy[]` as 0. A value 0 in `lazy[i]` indicates that there are no pending updates on node `i` in segment tree. 
 A non-zero value of `lazy[i]` means that this amount needs to be added to node `i` in segment tree before making any query to the node.
-## 12.3 - Segment Trees Solution
+## 16.3 - Segment Trees Solution
 **Let's now solve nested segments with a Segment Tree and Sweep Line**
 
 Given the input array `segments` we compute the maximum endpoint between the segments, and call it `n`. 
@@ -1224,7 +1470,7 @@ The range sum on $(s_i, e_i)$ will count only segments that starts after $s_i$ a
 	- all the segments $(s_j, e_j)$ that starts after $s_i$ and have already been closed have caused the increment by one of $s_j$
 		- starts after $i$ and already been closed, fully contained in $i$
 - the segment $i$ has been closed, increase by one $(s_i, s_i)$ in the tree.
-# 13 - Powerful Array
+# 17 - Powerful Array
 An array of positive integers $a_1,\dots,a_n$ is given. 
 Let us consider its arbitrary subarray $a_l, a_{l+1},\dots, a_r$, where $1 \le l \le r \le n$.
 For every positive integer $s$ we denote with $K_s$ the number of occurrences of $s$ into the subarray.
@@ -1234,7 +1480,7 @@ The sum contains only finite number of nonzero summands as the number of differe
 You should calculate the power of $t$ given subarrays.
 
 **Besides the trivial solutions, we introduce a new algorithmic technique.**
-## 13.1 - Mo's Algorithm 
+## 17.1 - Mo's Algorithm 
 The Mo’s Algorithm is a powerful and efficient technique for **solving a wide variety of range query problems.** 
 It becomes particularly **useful for kind of queries where the use of a Segment Tree or similar data structures are not feasible.** 
 **This typically occurs when the query is non-associative, meaning that the result of a query on a range cannot be derived by combining the answers of the subranges that cover the original range.**
@@ -1365,7 +1611,7 @@ Mo’s algorithm is an offline approach, which means we cannot use it when we ar
 
 When implementing Mo’s algorithm, the most challenging aspect is implementing the functions `add` and `remove`. 
 There are query types for which these operations are not as straightforward as in previous problems and require the use of more advanced data structures than just an array of counters
-## 13.2 - Solution
+## 17.2 - Solution
 We can just use Mo's Algorithm and a little bit of attention in updating the answer after a `add` or a `remove`.
 
 The solution is identical to the one seen in the previous problem, with one difference. 
@@ -1387,18 +1633,18 @@ let mut remove = |i| {
 	sum += counters[a[i]] * counters[a[i]] * a[i];
 };
 ```
-# 14 - Longest Common Subsequence
+# 18 - Longest Common Subsequence
 Given two strings, `S1` and `S2`, the task is to find the length of the longest common subsequence, i.e. longest subsequence present in both strings. 
 **Observation:** subsequence != substring. A subsequence do not have to be contiguous. 
 
 **There are many ways to attack this problem, we use it to talk about Dynamic Programming.**
-## 14.1 - Dynamic Programming
+## 18.1 - Dynamic Programming
 Dynamic Programming, like divide-and-conquer, solves problems by combining solutions of subproblems. 
 Divide-and-Conquer algorithms partitions the problem into disjoint subproblems, solve the subproblems and then combine their solutions to solve the original problem. 
 In contrast, **dynamic programming applies when subproblems overlap, that is, when sub-problems share sub-sub-problems.**
 In this context a divide-and-conquer algorithm does more work than necessary, repeatedly solving the common sub-sub-problems. 
 **A dynamic programming algorithm solves each sub-sub-problem just once and then saves its answer in a table, avoiding the work of recomputing the answer every time it solves each sub-sub-problem.** 
-### 14.1.2 - A first easy problem: Fibonacci
+### 18.1.2 - A first easy problem: Fibonacci
 Fibonacci numbers are defined as 
 $$
 \begin{align}
@@ -1459,7 +1705,7 @@ iteFibonacci(n)
 
 	return F[n-1]
 ```
-### 14.1.3 Memorization vs Tabulation
+### 18.1.3 Memorization vs Tabulation
 Tabulation and Memorization are two common techniques used in dynamic programming to optimize the solution of problems by avoiding redundant computations and storing intermediate results.
 1. **Tabulation:**
     - **Definition:** **Tabulation involves solving a problem by building a table** **(usually a 2D array or matrix) and filling it in a bottom-up manner. The table is filled iteratively, starting from the base cases and moving towards the final solution.**
@@ -1486,7 +1732,7 @@ Tabulation and Memorization are two common techniques used in dynamic programmin
 
 In summary, both tabulation and memorization are techniques used to optimize dynamic programming solutions by avoiding redundant computations. 
 Tabulation builds a table bottom-up, while memorization caches results top-down. 
-## 14.2 - Solution
+## 18.2 - Solution
 Now that we have refreshed dynamic programming we can go back to our problem. 
 
 The subproblems here ask to compute the longest common subsequence (LCS) of prefixes of the two sequences `S1` and `S2`: given two prefixes `S1[1,i]` and `S2[1,j]` our goal is to compute `LCS(S1[1,i], S2[1,j])`
@@ -1535,14 +1781,14 @@ longestCommonSubsequence(x, y)
 
 	return dp[n-1][m-1]
 ```
-# 15 - Minimum Number of Jumps
+# 19 - Minimum Number of Jumps
 Consider an array of `N` integers `arr[]`. 
 Each element represents the maximum length of the jump that can be made forward from that element. 
 This means if `arr[i] = x`, then we can jump any distance `y` such that `y <= x`.  
 Find the minimum number of jumps to reach the end of the array starting from the first element. 
 If an element is 0, then you cannot move through that element.  
 **Note:** Return -1 if you can't reach the end of the array.
-## 15.1 - Solution
+## 19.1 - Solution
 **We use Dynamic Programming to solve the problem.** 
 More specifically we use **Tabulation** to solve the problem: 
 1) create an array `jumps[]` from left to right such that `jumps[i]` indicate the minimum number of jumps needed to reach the position `i` starting from the start
@@ -1582,7 +1828,7 @@ minNumberOfJumps(array)
 
 Then the minimum number of jumps required to reach `i` is the minimum between the current number of jumps to reach `i` and the number of jumps required to reach `j` plus one more jump (to reach `i`)
 ![[Pasted image 20240116171229.png |center| 600]]
-# 16 - Partial Equal Subset Sum
+# 20 - Partial Equal Subset Sum
 Given an array `array[]` of size `N`, check if it can be partitioned into two parts such that the sum of elements in both parts is the same.
 
 This problem is a well-known NP-Hard problem, which admits a pseudo-polynomial time algorithm. 
@@ -1612,7 +1858,7 @@ $$K[V][i] = \min(K[V][i-1], K[V-v[i][i-1])$$
 The solution is $\max(a:K[V,n]\le C)$ 
 
 ---
-## 16.2 - Solution
+## 20.2 - Solution
 As in the 0/1 knapsack problem we construct a matrix $W$ with $n+1$ rows and $v+1$ columns. 
 Here the matrix contains booleans. 
 
@@ -1670,7 +1916,7 @@ partialEqualSubsetSum(array)
 
 The **then branch** of the `if` is crucial: if `arr[i - 1]` is greater than `j`, it means that including the current element `i` in the subset would make the sum exceed the current target sum `j`.
 Therefore, the solution at `dp[i][j]` would be the same as the solution without including the current element, i.e., `sol[i - 1][j]` (aka, we do not include `i`, as we can't)
-# 17 - Longest Increasing Subsequence
+# 21 - Longest Increasing Subsequence
 Given an array of integers, find the **length** of the **longest (strictly) increasing subsequence**
 from the given array.
 **observation:** subsequence, as before, it is not a contiguous. 
@@ -1683,7 +1929,7 @@ Consider the sequence $S[1,n]$ and let $LIS(i)$ be the $LIS$ of the prefix $S[1,
 $$LIS(i) = \begin{cases}1 + \max(LIS(j)\ |\ 1\le j\le i\ \text{and}\ S[j] < S[i]\\ 
 1 \text\ \ \ \ \text{if such $j$ does not exists}
 \end{cases}$$
-## 17.1 - Solution
+## 21.1 - Solution
 Due to optimal substructure and overlapping subproblem property, we can also utilize Dynamic programming to solve the problem. Instead of memoization, we can use the nested loop to implement the recursive relation.
 
 The outer loop will run from `i = 1 to N` and the inner loop will run from `j = 0 to i` and use the recurrence relation to solve the problem.
@@ -1712,7 +1958,7 @@ longestIncreasingSubsequence(array)
 
 	return lis.max()
 ```
-## 17.2 - Smarter Solution: Speeding up LIS
+## 21.2 - Smarter Solution: Speeding up LIS
 The main idea of the approach is to simulate the process of finding a subsequence by maintaining a list of “buckets” where each bucket represents a valid subsequence. 
 Initially, we start with an empty list and iterate through the input `nums` vector from left to right.
 
@@ -1746,11 +1992,11 @@ smartLIS(nums)
 - the position `low` is the index of the smallest element grater than `nums[i]` in `ans`. 
 	- this is obvious: we can substitute `ans[low]` with a smaller element without affecting the longest increasing subsequence, that remains valid. 
 - substituting `ans[low]` with `nums[i]` let us "consider" a new LIS, starting from `nums[i]`, this is because when we substitute we insert in a place that is still part of the current LIS, but if a new LIS would start entirely from the current element every element would be substituted **starting from that element**
-# 18 - Longest Bitonic Sequence
+# 22 - Longest Bitonic Sequence
 Given an array `arr[0 … n-1]` containing $n$ positive integers, a subsequence of `arr[]` is called **bitonic** if it is first increasing, then decreasing. 
 Write a function that takes an array as argument and returns the length of the longest bitonic subsequence. 
 A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty. 
-## 18.1 - Solution
+## 22.1 - Solution
 This problem is a slight variation of the previous problem. 
 Let the input array `arr[]` be of length `n`. 
 We need to construct two arrays `lis[]` and `lds[]` using the DP solution of the Longest Increasing Subsequence
@@ -1794,7 +2040,7 @@ longestBitonicSubsequence(array)
 
 	return lisMax + ldsMax - 1
 ```
-# 19 - Meetings in One Room
+# 23 - Meetings in One Room
 There is **one** meeting room in a firm. 
 There are `N` meetings in the form of `(start[i], end[i])` where `start[i]` is start time of meeting `i` and `end[i]` is finish time of meeting `i`.  
 Find the maximum number of meetings that can be accommodated in the meeting room, knowing that only one meeting can be held in the meeting room at a particular time.
@@ -1802,7 +2048,7 @@ Find the maximum number of meetings that can be accommodated in the meeting ro
 **Note:** Start time of one chosen meeting can't be equal to the end time of the other chosen meeting.
 
 There are various ways to solve the problem, we use it to present **greedy algorithms.**
-## 19.1 - Greedy Algorithms
+## 23.1 - Greedy Algorithms
 A **greedy algorithm** is any algorithm that follows the problem-solving heuristic of making the locally optimal choice at each stage. 
 In many problems a greedy strategy **does not produce an optimal solution**, but a greedy heuristic **can yield locally optimal solutions** that approximate a globally optimal solution in a reasonable amount of time. 
 
@@ -1813,7 +2059,7 @@ This heuristic does not intend to find the best solution, but it terminates in a
 Most problems for which greedy algorithms yields good solutions (aka good approximation of the globally optimal solution) have two property: 
 1) **greedy choice property:** we can make whatever choice seems best at the moment and then solve the subproblems that arise later. The choice made by a greedy algorithm may depend on choices made so far, but not on future choices or all solutions to the subproblem. It iteratively makes one greedy choice after another, reducing each given problem into a smaller one. In other words **a greedy algorithm never reconsider its choices**. This is **the main difference from dynamic programming**, which is exhaustive and is guaranteed to find the solution. After every stage, dynamic programming makes decisions based on all the decisions made at the previous stage and may reconsider the previous stage's algorithmic path to the solution
 2) **optimal substructure:** a problem exhibits optimal substructure if an optimal solution to the problem contains optimal solutions to the sub-problems. 
-## 19.2 - Solution
+## 23.2 - Solution
 We use the greedy approach to solve the problem: 
 - sort all the meetings in increasing order using their finish time
 - select the first meeting of the sorted list as the first meeting that will be held, push it to the list `results` of meetings and set a variable `time_limit` to the finish time of the first meeting 
@@ -1843,7 +2089,7 @@ meetingsInARoom(meetings)
 
 	return result; 
 ```
-# 20 - Wilbur and Array
+# 24 - Wilbur and Array
 Wilbur the pig is tinkering with arrays again. 
 He has the array $a_1,\dots,a_n$ initially consisting on $n$ zeroes.
 At one step he can choose any index $i$ and either add $1$ to all elements $a_i,\dots, a_n$ or subtract $1$from all elements $a_i,\dots,a_n$. 
@@ -1859,7 +2105,7 @@ Of course Wilbur wants to achieve this goal in the minimum number of steps and a
 		- `i = 0: +1` $\rightarrow$ `a = [1,1,1,1,1]`
 		- `i = 1: +1` $\rightarrow$ `a = [1,2,2,2,2]`
 		- ...
-## 20.1 - Solution
+## 24.1 - Solution
 The solution is based upon the observation that the minimum number of operations is equal to the sum of differences (in absolute value) between consecutive elements. 
 Given the array $v[1\dots n]$ we have that
 $$\text{result} = v[1] + \Sigma_{i=2}^n\ |v_i-v_{i-1}|$$
@@ -1876,7 +2122,7 @@ wilburAndArray(array)
 
 	return result
 ```
-# 21 - Woodcutters
+# 25 - Woodcutters
 Little Susie listens to fairy tales before bed every day. Today's fairy tale was about wood cutters and the little girl immediately started imagining the choppers cutting wood. 
 She imagined the situation that is described below.
 
@@ -1888,7 +2134,7 @@ The tree trait that is not cut down occupies a single point with coordinate $x_i
 Woodcutters can fell a tree if the segment to be occupied by the fallen tree does not contain any occupied point. 
 The woodcutters want to process as many trees as possible. 
 **What is the maximum number of trees to fell?**
-## 21.1 - Solution
+## 25.1 - Solution
 We use a greedy approach to solve the problem. 
 1) we always cut the first tree, making it fall to the left
 2) we always cut the last tree, making it fall to the right
@@ -1922,7 +2168,7 @@ woodcutters(trees)
 	return result
 }
 ```
-# 22 - Bipartite Graph
+# 26 - Bipartite Graph
 You are given an adjacency list of a graph **adj**  of V of vertices having 0 based index. Check whether the graph is bipartite or not.
 
 **The Problem in detail:**
@@ -1931,9 +2177,9 @@ In other words, for every edge $(u, v)$, either $u$ belongs to $U$ and $v$ to $V
 We can also say that there is no edge that connects vertices of same set.
 
 **A bipartite graph is possible if the graph coloring is possible using two colors such that vertices in a set are colored with the same color.**
-## 25.1 - Graphs 101
-**theory_TODO**
-## 25.2 - Solution
+## 26.1 - Graphs 101
+**TODO**
+## 26.2 - Solution
 We use the Breadth-First Search (BFS) to solve the problem: 
 - assign `red` to the source vertex
 - color with `blue` all the neighbors 
