@@ -3,5 +3,6 @@
   "theme": "moonstone",
   "enabledCssSnippets": [
     "center-imgs"
-  ]
+  ],
+  "baseFontSize": 18
 }

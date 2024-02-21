@@ -950,12 +950,74 @@ The idea is that of computing the binary vector $B[1,n]$ such that $B[i] = 1$ if
 This way the answer to the query $q(l,r)$ is $$\Sigma_{i=l}^{r-1}\ B[i]$$Thus each query can be solved in constant time computing the prefix sum of the vector $B$.
 #### 14.2.2.2 - Little Girl and Maximum
 We are given an array $A[1,n]$ and a set $Q$ of queries. Each query is a range sum query $i,j$ which returns the sum of the elements in $A[i..j]$. 
-
 The goal is to permute the elements in $A$ in order to maximize the sum of the results of the queries in $Q$.
 
-**TODO**
+The key is to observe that if we want to maximize the sum **we have to assign the largest value to the most frequently accessed entries.**
+Thus the solution consists of sorting both $A$ by descending values and the indexes of $A$ by descending frequency of access and pairing them in this order. 
+Therefore, once we have computed the frequencies, the solution takes $\Theta(n\log(n))$ time. 
+
+We are left with the problem of computing access frequencies. 
+We want to compute an array $F[1,n]$ where $F[i]$ is the number of times the index $i$ belongs to the query $Q$. 
+Computing this array by updating every single entry $F$ for each query takes $O(n\cdot q)$ and thus is unfeasible. 
+
+One possible solution is to adapt the sweep-line solution seen for the problem "Maximum Number of Overlapping Intervals". 
+This solution has a time complexity of $\Theta(q\log q)$ due to the comparison-based sorting interval endpoints. 
+Since the endpoints in our problem have a maximum value of $n$, we can optimize the solution to run in $\Theta(q)$ using counting sort. 
+
+**However, the best solution exploits prefix sums.** 
+We construct an array $U[1,n]$ such that its prefix sums are equal to our target array $F$. 
+Interestingly we need to modify just two entries of $U$ to account for a query in $Q$.
+
+Initially we set all entries of $U$ to $0$. 
+Then for a query $\langle l, r \rangle$ we add $1$ to $U[l]$ and subtract $1$ from $U[r+1]$, this way the prefix sums are as follows: 
+- unchanged for indexes less than $l$
+- increased by one for the indexes in $[l,r]$
+- unchanged for indexes greater than $r$
+
+Therefore, the prefix sum of $U$ up to $i$ equals to $F[i]$. 
+This algorithm takes $O(q+n)$ time. 
+
+The following pseudo-implementation clarifies the approach: 
+```java
+littleGirlMax(a[], q[]) 
+	n = a.length()
+	
+	u[n]
+	for (l, r) in q
+		u[l]++
+		if r + 1 < n 
+			u[r+1]--
+
+	f[n]
+	pS = 0
+	for i = 0 to n
+		pS += u[i]
+		f[i] = pS
+
+	a.sortDecreasing()
+	f.sortDecreasing()
+
+	res = 0
+	for i = 0 to n
+		res += a[i] * f[i]
+
+	return res
+```
 #### 14.2.2.3 - Number of Ways
-**TODO**
+Given an array $A[1,n]$ count the number of ways to split the array into three contiguous parts to that they have the same sum. 
+Formally, you need to find the number of such pairs of indices $i$ and $j$ (with $2 \le i \le j \le n-1$) such that: $$\Sigma_{k=1}^{i-1}\ A[k]= \Sigma_{k=i}^j\ A[k] = \Sigma_{k = j+1}^n\ A[k]$$ 
+Let be $S$ the sum of all the elements in the array. 
+If $S$ cannot be divided by $3$ we can immediately return $0$. 
+
+We compute an array $C$ that stores, at position $i$, the number of suffixes $A[i..n]$ that sums to $\frac{S}{3}$. 
+
+We scan $A$ from left to right to compute the prefix sum. 
+Every time the prefix sum at position $i$ is $\frac{S}{3}$ we add $C[i+2]$ to the result.  
+This is because the part $A[1..i]$ sums to $S/3$ and can be combined with any pair of parts of $A[i+1..n]$ where both parts sums to $S/3$. 
+
+Since the values in $A[i+1..n]$ sums to $\frac{2}{3}S$, the number of such pairs is the number of suffixes that sum to $S/3$ in $A[i+2..n]$. 
+
+Indeed if one of this suffix sums to $S/3$, say $A[j..n]$, then we are sure that $A[i+1, j-1]$ sums to $S/3$
 ## 14.3 - Prefix Sum Solution, O(n)
 The solution is based on the following mathematical property:
 **Observation:** any two prefix sums that are not next to each other with the same mod k, or a prefix sum with mod k = 0 that is not the first number will yield a valid subarray.
@@ -993,13 +1055,16 @@ checkSubarraySum(array, k)
 **Observation:** 
 We really do not need a full prefix sum array, it is enough to compute `sum` as we go and use it also as the mod result (we make `sum = sum%k` and use it as key, sums in modulo works). This is true because we never use the prefix sum of an element before the predecessor, so we can store only the sum up until now. 
 # 15 - Update the Array
-You have an array containing n elements initially all 0. 
+You have an array $A$ containing $n$ elements initially all $0$. 
 You need to do a number of update operations on it. 
 In each update you specify `l`, `r` and `val` which are the starting index, ending index and value to be added. 
 After each update, you add the `val` to all elements from index `l` to `r`. 
 After `u` updates are over, there will be `q` queries each containing an index for which you have to print the element at that index.
-**Observation:** `access(i)` wants the prefix sum of the elements `A[1..i]
 
+**Basically we have to support two operations:**
+1) `access(i)`, which returns $A[i]$
+2) `range_update(l,r,v)`, which update the entries in $A[l..r]$ by adding $v$
+ 
 To efficiently solve this problem we introduce a new data structure, the **Fenwick Tree**
 ## 15.1 - Fenwick Tree
 **The Fenwick Tree, also known as the Binary Indexed Tree (BIT), is a data structure that maintains the prefix sums of a dynamic array.** 
@@ -1167,7 +1232,23 @@ In this case, the rightmost and second trailing one are adjacent. To obtain the 
 Thankfully, this effect is one again achieved by adding the trailing one to the node’s ID.
 
 **The time complexity** of `add` is $\Theta(\log(n))$, as we observe that each time we move to the right sibling of the current node or the right sibling of its parent, the trailing one in its binary rep. shifts at lest one position to the left, and this can occur at most $\lfloor\log(n)\rfloor+1$ times.
-## 15.1.2 - Fenwick Tree in Rust
+## 15.1.2 - Applications of Fenwick Tree
+### 15.1.2.1 - Counting Inversions in an Array
+We are given an array $A[1..n]$ of $n$ positive integers. If $1 \le i < j \le n$ and $A[i]>A[j]$, then the pair $(i,j)$ is called an **inversion** of $A$. 
+The goal is to count the number of inversions of $A$.
+
+We assume that the largest integer $M$ in the array is in $O(n)$. 
+This assumption is important because we're using a Fenwick Tree of size $M$ and building such a tree takes $\Theta(M)$ time and space. 
+If, on the other hand, $M$ is too large, we need to sort $A$ and replace each element with its rank in the sorted array. 
+
+Then, we use a FT on an array $B$ with $M$ elements, initially set to $0$. 
+We scan the array $A$ from left to right. When processing $A[j]$ we set $B[j]$ to $1$. 
+The number of elements larger than $A[j]$ that we've already processed can be calculated using the range sum in $(j+1, M)$. 
+
+The running time is $\Theta(n\log n)$. 
+
+**TODO** why it works.
+## 15.1.3 - Fenwick Tree in Rust
 The following is a minimal implementation. 
 While we’ve transitioned to 0-based indexing for queries, internally, we still use the 1-based indexing to maintain consistency with the examples above.
 
@@ -1228,12 +1309,12 @@ impl FenwickTree {
 ## 15.2 - Fenwick Tree Solution
 We are given an array `A[1,n]` initially set to 0. 
 We want to support two operations: 
-- `access(i)` returns the sum `A[1..i]`
+- `access(i)` returns the element $A[i]$
 - `range_update(l, r, v)`, updates the entries in `A[l,r]` adding to them `v`
 
 The following Fenwick solution solve the problem
 1) from `A` we build the Fenwick Tree of length `n` (mind that `A` is initialized with all zeros)
-2) the operation `access(i)` is a wrapper of the operation `sum(i)` we have seen before
+2) the operation `access(i)` is a wrapper of the operation `sum(i)` we have seen before **TODO**
 3) the operation `range_update(l,r,v)` exploit the operation `add(i, v)` of the implementation of the Fenwick Tree: 
 	1) first we check that `l` is `<=` than `r`, aka that the interval of entries to update is well formed
 	2) then we check that `r <= n`, aka that the interval of entries to update is actually in the array
@@ -1256,8 +1337,9 @@ impl UpdateArray {
         self.ft.len()
     }
     pub fn access(&self, i: usize) -> i64 {
-        self.ft.sum(i)
-    }
+	    TODO
+        // self.ft.sum(i) - self.ft.sum(i-1)
+    } 
     pub fn range_update(&mut self, l: usize, r: usize, v: i64) {
         assert!(l <= r);
         assert!(r < self.ft.len());
@@ -1269,6 +1351,46 @@ impl UpdateArray {
     }
 }
 ```
+### 15.2.1 - Dynamic Prefix-Sums with Range Update
+The range update of the previous problem is paired with the `access(i)` operation.
+Here we want to support:
+- `range_update(l, r, v)`, same as before
+- `sum(i)`, returns $\Sigma_{k=1}^i\ A[k]$
+
+As before, we notice that 
+1) the operation `add(i,v)` provided by the basic implementation of our FT is a special case of `range_update`, more specifically `add(i,v) == range_update(i, n, v)` where `n` is the size of the tree
+2) `access(i)` is still being supported using `sum(i) - sum(i-1)`
+
+**The difference between this and Update the Array** is that here we have to support `sum`, while we where only supporting `access(i)` in Update the Array. 
+Let's say that we use here the same approach we used in Update the Array.
+For `range_update(l,r,v)` we modify the Fenwick Tree by adding $v$ ad position $l$ and by adding $-v$ at position $r+1$.
+- consider the starting array $[0,0,0,0]$ on which we build the FT
+- perform `range_update(1,2,2)`
+	- this in the original array would be `[0,2,2,0]`
+	- in the FT array, as stated by the implementation of `range_update`, we have $[0,2,0,-2]$
+- perform `sum(2)`, it should be $4$ but it gives us $2$. 
+
+**More formally:** consider `range_update(l,r,v)` on a brand new FT (all zeroes). The correct result of a `sum(i)` after the `range_update` is: 
+- if $1 \le i < l$, `sum(i)` is $0$
+- if $l \le i < r$, `sum(i)` is $v\cdot (i-l + 1)$ 
+- if $r \le i$, `sum(i)` is $v\cdot (r-l+1)$ 
+
+Instead the results returned by our implementation of `sum(i)` are the following: 
+- if $1 \le i < l$, `sum(i)` is $0$
+- if $l \le i < r$, `sum(i)` is $v\cdot i = v(l -1) + v(i - l + 1)$ 
+- if $r < i$, `sum(i)` is $(v-v)\cdot i = 0$ 
+
+**To fix those problems** we employ another Fenwick Tree, FT2,  which will keep track of these discrepancies. When we perform a `range_update(l,r,v)` we add $-v(l-1)$ to position $l$ and $v\cdot r$ to the position $r+1$ in FT2. 
+This revised approach ensures that the result of `sum(i)` can be expressed as $a\cdot i + b$, where:
+- $a$ is the sum up to $i$ in the first fenwick tree
+- $b$ is the sum up to $i$ in FT2
+
+The value of $b$ from FT2 corrects the errors of the flawed solution, specifically: 
+- for $1 \le i < l$, $b = 0$
+- for $l \le i \le r,\ b = -v(l-1)$ 
+- for $r < i,\ b = v\cdot r - v(l-1) = v(r-l+1)$ 
+
+**TODO**
 # 16 - Nested Segments
 We are given $n$ segments: $[l_1, r_1],\dots, [l_n, r_n]$ on a line. 
 There are no coinciding endpoints among the segments. 
@@ -1284,6 +1406,7 @@ We provide two solutions to this problem:
 We build an array `events` where every entry is `[l_i, r_i, i]`, and then we sort `events` by start of the respective range, `l_i`.
 
 Then we build the Fenwick tree with size $2n+1$, we scan each event $[l_i, r_i, i]$ and add $1$ in each position $r_i$ in the fenwick tree. 
+This way `sum(r_i)` reports the number of segments that end in the range $[1, r_i]$
 
 Now we scan the events again. 
 When we process the event $[l_i, r_i, i]$ we observe that the segments already processed are only the ones that starts before the current one, as they are sorted by their starting points.
@@ -1293,6 +1416,7 @@ This is computed with a query `sum(r_i)` on the Fenwick Tree.
 
 After computing the solution for the current segment we subtract $1$ to position $r_i$, to remove the contribution of the right endpoint of the current segment in the next queries.
 This is why the segments that starts before the current one but overlaps with it are not counted
+
 The following snippet implement the solution above, using the Fenwick tree previously defined. 
 ```rust
 fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
@@ -1319,6 +1443,8 @@ fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
 	sol
 }
 ```
+
+TODO test -1
 ## 16.2 - Segment Tree
 **A Segment Tree is a data structure that stores information about array intervals as a tree.**
 This allows answering **range queries** over an array efficiently, while still being flexible enough to **allow quick modification of the array**.
