@@ -1,22 +1,18 @@
 {
   "main": {
-    "id": "08e2cd33a90bc876",
+    "id": "99882e27e24adf8c",
     "type": "split",
     "children": [
       {
-        "id": "0c371f31408bf50e",
+        "id": "3debf593e5cfc35b",
         "type": "tabs",
         "children": [
           {
-            "id": "92110bd74c7ae074",
+            "id": "2abe0c91c0ebf33a",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "cp-notes.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -25,15 +21,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "861a3e14d21616d5",
+    "id": "ce35bfe50d69dd05",
     "type": "split",
     "children": [
       {
-        "id": "ad161d14665c68f4",
+        "id": "d09a0965aee2dbe5",
         "type": "tabs",
         "children": [
           {
-            "id": "ba26190e01d3774b",
+            "id": "fcbea232de2277f8",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -43,7 +39,7 @@
             }
           },
           {
-            "id": "63a605511c908964",
+            "id": "da82ac83906c7f86",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -58,7 +54,7 @@
             }
           },
           {
-            "id": "b4810659abb520f5",
+            "id": "a7e7cc22230c2312",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -69,23 +65,22 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 300
   },
   "right": {
-    "id": "9d9ae04ade4b7d03",
+    "id": "67bd13f3d99bb196",
     "type": "split",
     "children": [
       {
-        "id": "c7918b9f6903b3a0",
+        "id": "1413f3f8c1e366e4",
         "type": "tabs",
         "children": [
           {
-            "id": "da9a1601b0cde2bc",
+            "id": "835a8243beea0966",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "cp-notes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,19 +92,18 @@
             }
           },
           {
-            "id": "59e10b83e45b0dde",
+            "id": "80c9e64f300aa747",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cp-notes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "d40eab37bde8a624",
+            "id": "74fd6e69854a16fd",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -120,13 +114,11 @@
             }
           },
           {
-            "id": "1a822a4e337ca472",
+            "id": "94f3fea63a3fa68e",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "cp-notes.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -146,24 +138,6 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "92110bd74c7ae074",
-  "lastOpenFiles": [
-    "cp-tldr.md",
-    "cp-notes.md",
-    "imgs/Pasted image 20240219103626.png",
-    "imgs/Pasted image 20240219095000.png",
-    "imgs/Pasted image 20240212162551.png",
-    "imgs/IMG_0416.png",
-    "imgs/Pasted image 20240212165129.png",
-    "IMG_0415 1.png",
-    "IMG_0415.png",
-    "README.md",
-    "imgs/Pasted image 20240211104316.png",
-    "imgs/IMG_0413.png",
-    "imgs/Pasted image 20240205105237 1.png",
-    "Handson_3_solution_Giulio_Paparelli.md",
-    "Handson_2_solution_Giulio_Paparelli.md",
-    "Handson_1_solution_Giulio_Paparelli.md",
-    "imgs"
-  ]
+  "active": "2abe0c91c0ebf33a",
+  "lastOpenFiles": []
 }

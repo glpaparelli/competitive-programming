@@ -1434,7 +1434,7 @@ fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
 	}
 	let mut sol: Vec<(i64, usize)> = Vec::with_capacity(n);
 	for i in 0..n {
-		sol.push((tree.sum(events[i].1 as usize) - 1, events[i].2));
+		sol.push((tree.sum((events[i].1 -1) as usize) , events[i].2));
 		tree.add(events[i].1 as usize, -1);
 	}
 	// restore so that the solution are paired with the input ordering
@@ -1443,8 +1443,6 @@ fn fenwick_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usize)> {
 	sol
 }
 ```
-
-TODO test -1
 ## 16.2 - Segment Tree
 **A Segment Tree is a data structure that stores information about array intervals as a tree.**
 This allows answering **range queries** over an array efficiently, while still being flexible enough to **allow quick modification of the array**.

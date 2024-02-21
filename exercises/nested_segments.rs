@@ -67,7 +67,7 @@ fn fenwick_tree_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(i64, usiz
 
     let mut sol: Vec<(i64, usize)> = Vec::with_capacity(n);
     for i in 0..n {
-        sol.push((tree.sum(events[i].1 as usize) - 1, events[i].2));
+        sol.push((tree.sum((events[i].1 -1) as usize), events[i].2));
         tree.add(events[i].1 as usize, -1);
     }
     
@@ -307,23 +307,23 @@ fn segment_tree_nested_segments(input_segments: &[(i32, i32)]) -> Vec<(usize, i3
 }
 
 fn main() {
-    let input_segments1 = vec![(1, 8), (2, 3), (4, 7), (5, 6)];
-    let sol1 = segment_tree_nested_segments(&input_segments1);
-    sol1.iter().for_each(|&(_, ns)| println!("{}", ns));
-
-    println!("");
-
-    let input_segments2 = vec![(3, 4), (1, 5), (2, 6)];
-    let sol2 = segment_tree_nested_segments(&input_segments2);
-    sol2.iter().for_each(|&(_, ns)| println!("{}", ns));
-
     // let input_segments1 = vec![(1, 8), (2, 3), (4, 7), (5, 6)];
-    // let mut sol1 = fenwick_tree_nested_segments(&input_segments1);
-    // sol1.iter().for_each(|&(first, _)| println!("{}", first));
+    // let sol1 = segment_tree_nested_segments(&input_segments1);
+    // sol1.iter().for_each(|&(_, ns)| println!("{}", ns));
+
     // println!("");
+
     // let input_segments2 = vec![(3, 4), (1, 5), (2, 6)];
-    // let mut sol2 = fenwick_tree_nested_segments(&input_segments2);
-    // sol2.iter().for_each(|&(first, _)| println!("{}", first));
+    // let sol2 = segment_tree_nested_segments(&input_segments2);
+    // sol2.iter().for_each(|&(_, ns)| println!("{}", ns));
+
+    let input_segments1 = vec![(1, 8), (2, 3), (4, 7), (5, 6)];
+    let mut sol1 = fenwick_tree_nested_segments(&input_segments1);
+    sol1.iter().for_each(|&(first, _)| println!("{}", first));
+    println!("");
+    let input_segments2 = vec![(3, 4), (1, 5), (2, 6)];
+    let mut sol2 = fenwick_tree_nested_segments(&input_segments2);
+    sol2.iter().for_each(|&(first, _)| println!("{}", first));
 
     // println!("");
     // println!("");
