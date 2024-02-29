@@ -135,7 +135,8 @@ fn holiday_planning(itineraries: Vec<Vec<usize>>, cities: usize, days:usize) -> 
 
         // For each of the vacantion days
         for day in 1..days + 1 {    
-            // days "before" the current day     
+            // days "before" the current day (prev_days is the number of days of vacation)
+            // before the current day
             for prev_days in 0..day + 1 {
                 // to compute the maximum number of attractions take the maximum between: 
                 // 1) #attractions seen if we do not spend in the curr city
