@@ -1719,11 +1719,12 @@ Please remember that a node in segment tree stores or represents result of a que
 And if this node’s range lies within the update operation range, **then all descendants of the node must also be updated.** 
 
 **Example:** consider the node with value $27$ in above diagram, this node stores sum of values at indexes from $3$ to $5$. 
-If our update query is for range $2$ to $5$, then we need to update this node and all descendants of this node. 
+If our update query is for range $3$ to $5$, then we need to update this node and all descendants of this node. 
 With Lazy propagation, we update only node with value $27$ and postpone updates to its children by storing this update information in separate nodes called lazy nodes or values. 
 We create an array `lazy[]` which represents lazy node. 
 The size of `lazy[]` is same as array that represents segment tree.
-The idea is to initialize all elements of `lazy[]` as 0. A value 0 in `lazy[i]` indicates that there are no pending updates on node `i` in segment tree. 
+The idea is to initialize all elements of `lazy[]` as 0. 
+A value 0 in `lazy[i]` indicates that there are no pending updates on node `i` in segment tree. 
 A non-zero value of `lazy[i]` means that this amount needs to be added to node `i` in segment tree before making any query to the node.
 ## 16.2.3 Persistency
 A **persistent data structure** **is a data structure that remembers its previous state for each modification.** 
@@ -1776,6 +1777,8 @@ Then we increase by $1$ the segment $(s_i, s_i)$ in the segment tree (aka we `ad
 
 This works because we increase by one the start $s_i$ when we find the end of its segment, the endpoint $e_i$. 
 **The range sum** on $(s_i, e_i)$ **will count only segments that starts after the current segment** $s_i$ **and have already been closed** (otherwise they would be $0$ in the tree).
+## 16.4 - Summary
+![[Pasted image 20240301112709.png | center | 600]]
 # 17 - Powerful Array
 An array of positive integers $a_1,\dots,a_n$ is given. 
 Let us consider its arbitrary subarray $a_l, a_{l+1},\dots, a_r$, where $1 \le l \le r \le n$.
@@ -2928,20 +2931,6 @@ stronglyConnectedComponents(graph)
 4. Pop nodes from the stack one by one. Each popped node represents the start of a DFS traversal in the transposed graph.
 6. Perform DFS on the transposed graph starting from the popped node. Collect all nodes reachable from this starting node. These nodes form one SCC.
 7. Repeat step 4 and step 5 until all nodes are visited.
-
-**Why it works?**
-The idea behind this algorithm comes from a key property of the **component graph** $G^{SCC} = (V^{SCC}, E^{SCC})$. 
-Suppose that $G$ has strongly connected components $C_1,C_2,\dots, C_k$. 
-The vertex set $V^{SCC}$ is $\{v_1,v_2,\dots,v_k\}$ and it contains a vertex $v_i$ for each strongly connected component $C_i$ of $G$. 
-There is an edge $(v_i,v_j)\in E^{SCC}$ if $G$ contains a directed edge $(x,y)$ for some $x\in C_i$ and some $y \in C_j$. 
-Looked at the other way, by contracting all edges whose incident vertices are within the same strongly connected component of $G$, the resulting graph is $G^{SCC}$. 
-
-The **key property** is that the component graph is a DAG, which the following lemma implies. 
-**Lemma:**
-Let $C$ and $C'$ be distinct strongly connected components in a directed graph $G = (V,E)$, let $u,v \in C$ and $u',v' \in C'$ and suppose that $G$ contains a path $u \rightarrow u'$.
-Then $G$ **cannot** also contain a path $v\rightarrow v'$. 
-
-**TODO**
 ### 28.1.3 - Single Source Shortest Path
 Given a direct or undirect graph $G = (V,E)$ the **objective is to find the shortest path from a single source vertex to all the other vertices in the graph.** 
 
