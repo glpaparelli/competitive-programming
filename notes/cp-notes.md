@@ -1,4 +1,4 @@
-cThis notes are problem-centered: we introduce a problem and then the theory to efficiently solve it.
+This notes are problem-centered: we introduce a problem and then the theory to efficiently solve it.
 **Use at Your Own Risk.**
 # 1 - Contiguous Sub-Array with Max Sum
 ![[Screenshot from 2024-01-05 09-29-59.png | center | 700]]
@@ -2100,7 +2100,7 @@ rodCutting(rods[])
 `q = Math.max(q, rods[i].p + r[i-j]`
 - `q` is the current best profit for a potential cut of length $i$
 - we take the maximum between `q` and the sum of
-	- `rods[i].p`, we make a cut of the length `i` and take the corresponding row
+	- `rods[i].p`, we make a cut of the length `i`: we have a rod of length `i` and consider its price, plus
 	- `r[i-j]`, the best possible revenue obtainable with the other piece of the rod, which is long `i-j`
 
 The algorithm obviously computes in $O(n^2)$ time. 
@@ -2296,9 +2296,12 @@ partialEqualSubsetSum(array)
 	// dp[i][j] = true if exists a subset of the 
 	// first i elements in array that summed gives j
 	dp[n+1][sum+1]
-	
+
+	// always exists a subset of the first i elements that 
+	// sum up to 0, the empty subset
 	for i = 0 to n+1
 		dp[i][0] = true
+	// never exists the empty subset that sum up to j >= 1
 	for j = 1 to sum+1
 		dp[0][j] = false
 
@@ -2398,9 +2401,8 @@ smartLIS(nums)
 
 **Said easy:**
 - the length of `ans` is the length of the current LIS. 
-- when we substitute, we insert `nums[i]` in position `low` of `ans`. 
-- the position `low` is the index of the smallest element grater than `nums[i]` in `ans`. 
-	- this is obvious: we can substitute `ans[low]` with a smaller element without affecting the longest increasing subsequence, that remains valid. 
+- when we substitute, we insert `nums[i]` in position `low` of `ans`, using binary search to find `low`
+	- `low` is the index of the smallest element grater than `nums[i]` in `ans`, we can substitute `ans[low]` with a smaller element without affecting the longest increasing subsequence, that remains valid. 
 - substituting `ans[low]` with `nums[i]` let us "consider" a new LIS, starting from `nums[i]`, this is because when we substitute we insert in a place that is still part of the current LIS, but if a new LIS would start entirely from the current element every element would be substituted **starting from that element**
 ## 21.3 - DP as Longest/Shortest Path of a DAG
 It is often useful to reduce a problem to a (single source) longest path computation on a suitable **DAG** (directed acyclic graph).
@@ -2451,7 +2453,7 @@ coinChange(coins[], k) {
 			else
 				// the number of ways to change j is the sum between 
 				// 1) the number of ways without using the coin i
-				// 2) the number of ways using the coin i, * (see later)
+				// 2) the number of ways using the coin i plus * (see later)
 				dp[i][j] = 
 					dp[i-1][j] + 
 					dp[i][j-coins[i]]
@@ -2652,7 +2654,11 @@ $$s_j \ge \Sigma_{k \in T}\ w_k$$
 
 **Solution:**
 ![[IMG_0425.png | center | 600]]
-**We always choose the box that maximize the residual strength of the box**, which maximize the number of boxes that we can still put on top of the last box, hence the height of the tower is maximized. 
+
+**Said better:**
+![[Pasted image 20240301092147.png | center | 600]]
+
+**We always choose the box that maximize the residual strength of the tower**, which maximize the number of boxes that we can still put on top of the last box, hence the height of the tower is maximized. 
 ### 25.1.5 - Hero
 Bitor has $H$ health points and must defeat $n$ monsters. 
 The $i$-th monster deals $d_i$ damage but after death it drops a potion that restore $a_i$ health points, and $a_i$ can be greater than the initial health of Bitor. 
@@ -2915,6 +2921,14 @@ stronglyConnectedComponents(graph)
 	printRes()
 ```
 
+**Said Easy:**
+1. Initialize an empty stack to keep track of the finishing times of nodes during the first DFS traversal.
+2. Perform a DFS traversal on the original graph, and upon completing the traversal of a node, push it onto the stack.
+3. Build the transposed graph (a graph with all edges reversed).
+4. Pop nodes from the stack one by one. Each popped node represents the start of a DFS traversal in the transposed graph.
+6. Perform DFS on the transposed graph starting from the popped node. Collect all nodes reachable from this starting node. These nodes form one SCC.
+7. Repeat step 4 and step 5 until all nodes are visited.
+
 **Why it works?**
 The idea behind this algorithm comes from a key property of the **component graph** $G^{SCC} = (V^{SCC}, E^{SCC})$. 
 Suppose that $G$ has strongly connected components $C_1,C_2,\dots, C_k$. 
@@ -2957,7 +2971,9 @@ There are two things we have to consider when solving this problem:
 	2) it also cannot have a positive cycles since removing a cycle from a path $s$ to $v$ produces a shortest path
 		1) $0$-weighted cycles can be removed
 	3) **without loss of generality we can assume that the shortest path have no cycles, that is they are simple paths**
-		1) since any acyclic path in the graph contains at most $|V|$ distinct vertices it also contains at most $|V|-1$ edges. **any shortest path contains at most n-1 edges, where n is the number of nodes in the graph**
+		1) since any acyclic path in the graph contains at most $|V|$ distinct vertices it also contains at most $|V|-1$ edges.
+
+**Any shortest path contains at most n-1 edges, where n is the number of nodes in the graph**
 
 There are several algorithms to solve the problem: 
 1) **Dijkstra's Algorithm:** it starts from the source vertex and iteratively explore the vertices with the smallest tentative distance until all vertices have been visited
@@ -2977,36 +2993,46 @@ It works for both directed and undirected graphs with non-negative edge weights.
 **Consider the following pseudo-implementation:**
 ```java
 dijikstra(graph, source)
-	distances[source] = 0
-	PriorityQueue queue
+	source.distance = 0
+	PriorityQueue queue // a min-priority queue
 
 	for v in graph.nodes()
 		if v != source
-			distances[v] = MAX
+			v.distance = MAX
 		queue.add(v)
 
 	while !q.isEmpty
 		// u is a vertex in Q such that distances[u] is minimum
+		// quueue is a priority queue 
 		u = queue.pop()
 		for v in graph.getNeighborsOf(u)
 			weight = graph.getWeightOfEdge(u,v)
-			distance[v] = min(distance[v], distance[u]+weight)
+			// this update is reflected on the priority queue
+			// that might have to "resort" elements
+			v.distance = min(v.distance, u.distance+weight)
 
+	distances[n]
+
+	for i = 0 to n
+		distances[i] = graph.getNode(i).distance
 	return distances
 ```
 
 **Time complexity of Dijkstra:**
-The time complexity of Dijkstra's algorithm depends on the data structures used to implement it. Using a priority queue based on a binary heap, the time complexity is typically $O((V+E)\log(V))$ where $V$ is the number of vertices and $E$ is the number of edges in the graph.
-
-Here's a breakdown of the time complexity:
-- Initializing the distances and priority queue: $O(V)$
-- In each iteration of the main loop:
-    - Extracting the vertex with the minimum distance from the priority queue: $O(\log(V))$ 
-    - Relaxing each neighboring vertex: $O(E)$ in total (as each edge is considered once)
-- Overall, the main loop runs $V$ times (once for each vertex).
-
-Therefore, the total time complexity is approximately $O(V\log(V)+E)$. 
-However, in dense graphs where $E$ is close to $V^2$, the complexity can be considered as $O(V^2\log(V))$. 
+The time complexity of Dijkstra's algorithm depends on the data structures used to implement it. 
+Using a priority queue based on a **binary heap**, the time complexity is typically $O((V+E)\log(V))$ where $V$ is the number of vertices and $E$ is the number of edges in the graph.
+**Remember the complexity of a binary heap**, seen them in *8.3*
+**Breakdown of the complexity**
+1. Initialization:    
+    - Inserting vertices into the priority queue: O(V * log(V))
+    - Each insertion takes O(log(V)) time, and there are V vertices.
+2. Main loop:
+    - In each iteration of the loop, we extract the minimum vertex from the priority queue and relax its outgoing edges.
+    - The loop runs V times because each vertex is extracted at most once.
+    - For each vertex, we relax its outgoing edges, which takes constant time for each edge relaxation.
+3. Updating priorities:
+    - Decreasing the priority of a vertex: O(log(V))
+    - Since each edge relaxation may require updating the priority of a vertex in the priority queue, the total time spent on updating priorities is O(E * log(V)).
 #### 28.1.3.2 - Bellman-Ford Algorithm
 The Bellman-Ford algorithm is used to find the shortest paths from a single source vertex to all other vertices in a weighted graph, even in the presence of negative weight edges, as long as there are no negative weight cycles reachable from the source vertex.
 
@@ -3061,6 +3087,7 @@ bellmanFord(graph, source)
     - For each vertex `u` in the graph, and for each edge `(u, v)` connected to `u`, where `v` is the destination vertex, the inner loop iterates through the edges. This inner loop contributes O(E) to the time complexity.
 
 Combining the complexities of iterating over vertices $(O(V))$ and edges $(O(E))$, and considering that we iterate over all vertices for a total of $|V| - 1$ times, we get a time complexity of $O((|V| - 1) * |E|)$, which is simplified to $O(V * E)$
+**Observation:** we assume that each node as a constant number of neighbors ($O(1)$), for a complete graph the complexity is $O(n^3)$.
 ### 28.1.4 - Minimum Spanning Tree
 A **spanning tree** is a subset of a graph that includes all the graph's vertices and some of the edges of the original graph, intending to have no cycles. 
 A spanning tree is not necessarily unique.
@@ -3121,7 +3148,7 @@ Let's define the following operations:
 
 Then we can now solve the problem using those operations: 
 ```java
-n = read(stdin)
+n = read(stdin) // number of friends
 for x from 1 to n
 	create-set(x)
 
