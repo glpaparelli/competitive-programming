@@ -1,5 +1,6 @@
 This notes are problem-centered: we introduce a problem and then the theory to efficiently solve it.
 **Use at Your Own Risk.**
+**TODO:** check that every solution is actually correct (even with the ipad notes of prof)
 # 1 - Contiguous Sub-Array with Max Sum
 ![[Screenshot from 2024-01-05 09-29-59.png | center | 700]]
 ### 1.1.1 - Brute Force, O(n^2)
@@ -2473,49 +2474,7 @@ Write a function that takes an array as argument and returns the length of the l
 A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty. 
 
 **Solution**
-This problem is a slight variation of the previous problem. 
-Let the input array `arr[]` be of length `n`. 
-We need to construct two arrays `lis[]` and `lds[]` using the DP solution of the Longest Increasing Subsequence
-- `lis[i]` stores the length of the longest increasing subsequence **ending** in `arr[i]`
-- `lds[i]` stores the length of the longest decreasing subsequence **starting** in `arr[i]`
-
-We return the max value of `lis[i] + lds[i] -1` where $i\in [0,n-1]$
-
-To compute `lds[i]` we iterate through the array backwards and apply the same reasoning used for `lis[]`, as we are looking for a decreasing sequence but proceeding backwards, is the same as an increasing sequence. 
-
-**Basically the output is the sum of the longest increasing sequence left to right and the longest increasing sequence right to left**
-
-The following is the implementation of the solution:
-```rust
-longestBitonicSubsequence(array)
-	n = array.length()
-
-	// exactly as LIS
-	lis[n]
-	for i = 0 to n
-		lis[i] = 1
-
-	for i = 1 to n 
-		for j = 0 to i
-			if array[i] > array[j] && lis[i] < lis[j] + 1
-				lis[i] = lis[j] + 1
-
-	// LIS but backwards
-	lds[n]
-	for i = 0 to n
-		lds[i] = 1
-
-	for i = n-1 to 0
-		for j = n-1 to i
-			if array[i] > array[j] && lds[i] < lds[j] + 1 {
-				lds[i] = lds[j] + 1
-			}
-
-	lisMax = lis.max()
-	ldsMax = lds.max()
-
-	return lisMax + ldsMax - 1
-```
+**TODO** my solution was wrong
 # 24 - Largest Independent Set on Trees
 Given a tree $T$ with $n$ nodes, find one of its **largest independent sets**. 
 An independent set is a set of nodes $I$ such that there are no edges connecting any pair of nodes in $I$. 
@@ -2581,34 +2540,7 @@ An optimization problem can be (optimally) solved using Greedy if the problem ha
 You are given $n$ activities with their start and finish times. Select the maximum number of activities that can be performed by a single person, assuming that a person can only work on a single activity at a time. 
 
 **Solution:**
-The greedy choice is to always pick the next activity whose finish time is the least among the remaining activities and the start time is more or equal to the finish time of the previously selected activity. 
-
-The algorithm behaves as follows: 
-- sort the activities according to their finish time
-- select the first activity from the sorted activities
-- iterate through the remaining activities
-	- if the start time of this activity is greater than or equal to the finish time of the previously selected activity then select this activity 
-	- update the "finish" of the activity for future selection
-
-The following pseudo-implementation clarifies the reasoning: 
-```java
-activitySelection(activities[])
-	n = activities.length()
-
-	// sort by activities[i].finish component
-	activities.sort()
-	res = 1; 
-	lastFinishTime = activities[0].finish
-
-	for i = 1 to n
-		// if the current activity starts after the end of the 
-		// last selected activity then we can do it
-		if activities[i].start >= lastFinishTime
-			res++
-			lastFinishTime = activites[i].finish
-
-	return res
-```
+**TODO** my solution was wrong (intuition: sort by ending time, this takes care of tricky overlaps)
 ### 25.1.2 - Job Sequencing 
 You are given an array of jobs where every job have a deadline and associated profit that can be made if the job is completed before its deadline. 
 It is also given that every job takes a single unit of time,  so the minimum possible deadline for any job is 1. 
